@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ECO Workflow Portal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f5f1; --panel:#ffffff; --ink:#22303a; --muted:#64727e;
+  --accent:#0e5f6e; --accent-ink:#ffffff; --sand:#c9a227;
+  --line:#dfe0d9; --soft:#eef0ea;
+  --ok:#2e7d4f; --warn:#a66a00; --bad:#b3362c; --info:#39618f;
+  --chip-ok:#e3f1e8; --chip-warn:#f7ecd8; --chip-bad:#f8e4e1; --chip-info:#e4ecf5; --chip-neutral:#ececec;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#15191d; --panel:#1d2329; --ink:#e4e7e9; --muted:#9aa6af;
+    --accent:#4db3c4; --accent-ink:#0d2328; --sand:#d4b14a;
+    --line:#333b42; --soft:#232a31;
+    --ok:#6fc492; --warn:#dca94f; --bad:#e08a81; --info:#86aed6;
+    --chip-ok:#1e3328; --chip-warn:#39301b; --chip-bad:#3b2422; --chip-info:#21303f; --chip-neutral:#2b3238;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding:0 16px 48px;}
+.wrap{max-width:1040px;margin:0 auto;}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;padding:26px 0 6px;}
+h1{font:700 26px/1.2 "IBM Plex Serif",Georgia,serif;margin:0;}
+h1 .eco{color:var(--accent);}
+.whoami{margin-left:auto;color:var(--muted);font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.rolebadge{background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:600;}
+.sub{color:var(--muted);margin:0 0 18px;font-size:13.5px;max-width:70ch;}
+nav.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);margin-bottom:22px;flex-wrap:wrap;}
+nav.tabs button{appearance:none;background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;
+  padding:9px 12px;font:600 13.5px "IBM Plex Sans",sans-serif;color:var(--muted);cursor:pointer;}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);}
+.badge{display:inline-block;min-width:18px;text-align:center;background:var(--accent);color:var(--accent-ink);
+  border-radius:99px;font-size:11px;padding:1px 6px;margin-left:6px;}
+.notice{background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--sand);border-radius:8px;
+  padding:12px 16px;margin-bottom:18px;font-size:13.5px;}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
+.group-h{grid-column:1/-1;font:700 15px "IBM Plex Serif",Georgia,serif;margin:10px 0 0;color:var(--muted);}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;text-align:left;
+  cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0;font:inherit;color:inherit;}
+.card:hover{border-color:var(--accent);}
+.card h3{margin:0;font:600 16px "IBM Plex Sans",sans-serif;}
+.card .route{font-size:12.5px;color:var(--muted);}
+.card .route b{color:var(--ink);}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px;}
+.panel h2{margin:0 0 2px;font:700 19px "IBM Plex Serif",serif;}
+.panel h3{margin:0 0 6px;font:700 16px "IBM Plex Serif",serif;}
+.panel .meta{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+.fields .full{grid-column:1/-1;}
+@media (max-width:560px){.fields{grid-template-columns:1fr;}.fields .full{grid-column:auto;}}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted);min-width:0;}
+input,select,textarea{font:14px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--bg);
+  border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;}
+textarea{min-height:64px;resize:vertical;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+.items table{border-collapse:collapse;width:100%;min-width:460px;}
+.items th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:4px 6px;}
+.items td{padding:3px 4px;}
+.itemswrap{overflow-x:auto;}
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  font:600 13.5px "IBM Plex Sans",sans-serif;border-radius:7px;padding:8px 16px;cursor:pointer;width:auto;}
+.btn:hover{border-color:var(--accent);}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+.btn.small{padding:5px 10px;font-size:12.5px;}
+.btn.danger{color:var(--bad);}
+.btn[disabled]{opacity:.5;cursor:default;}
+.formfoot{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
+.err{color:var(--bad);font-size:13px;font-weight:600;}
+.okmsg{color:var(--ok);font-size:13px;font-weight:600;}
+.sent{background:var(--chip-ok);border:1px solid var(--line);border-radius:8px;padding:14px 16px;}
+.sent b{font-family:"IBM Plex Mono",monospace;}
+.list{display:flex;flex-direction:column;gap:10px;}
+.req-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;min-width:0;}
+.req-head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;cursor:pointer;}
+.req-head .ref{font:500 12px "IBM Plex Mono",monospace;color:var(--muted);}
+.req-head .ttl{font-weight:600;flex:1 1 200px;min-width:0;}
+.req-head .by{color:var(--muted);font-size:12.5px;}
+.chip{border-radius:99px;padding:2px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+.st-pending_manager{background:var(--chip-warn);color:var(--warn);}
+.st-submitted,.st-preparing{background:var(--chip-info);color:var(--info);}
+.st-in_review,.st-on_hold{background:var(--chip-warn);color:var(--warn);}
+.st-approved,.st-won,.st-ongoing{background:var(--chip-ok);color:var(--ok);}
+.st-completed,.st-disregarded{background:var(--chip-neutral);color:var(--muted);}
+.st-rejected,.st-lost,.st-cancelled{background:var(--chip-bad);color:var(--bad);}
+.conf{background:var(--chip-bad);color:var(--bad);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;}
+.req-body{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;font-size:13.5px;}
+.kv{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:3px 14px;margin:0;}
+.kv dt{color:var(--muted);}
+.kv dd{margin:0;overflow-wrap:anywhere;}
+.req-body table{border-collapse:collapse;min-width:420px;width:100%;font-size:13px;}
+.req-body table th{border-bottom:1px solid var(--line);text-align:left;padding:3px 8px 3px 0;color:var(--muted);font-size:11.5px;text-transform:uppercase;}
+.req-body table td{padding:3px 8px 3px 0;border-bottom:1px solid var(--soft);}
+.hist{margin:10px 0 0;padding:0;list-style:none;font-size:12.5px;color:var(--muted);}
+.hist li::before{content:"— ";}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+.actions input{flex:1 1 180px;width:auto;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.filters select,.filters input{width:auto;flex:0 1 220px;}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:28px 20px;text-align:center;color:var(--muted);}
+.empty b{color:var(--ink);}
+.waithint{font-size:12.5px;color:var(--warn);margin-top:10px;font-weight:600;}
+.mailnote{font-size:12.5px;color:var(--muted);margin-top:6px;}
+.tbl{overflow-x:auto;}
+.tbl table{border-collapse:collapse;width:100%;min-width:680px;font-size:13px;}
+.tbl th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:6px 10px 6px 0;border-bottom:1px solid var(--line);}
+.tbl td{padding:6px 10px 6px 0;border-bottom:1px solid var(--soft);vertical-align:top;}
+.org,.org ul{list-style:none;margin:0;padding-left:22px;border-left:1px solid var(--line);}
+.org{padding-left:0;border-left:none;}
+.org li{margin:6px 0;}
+.org .node{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;}
+.org .node b{display:block;}
+.org .node span{font-size:12px;color:var(--muted);}
+.signin{max-width:420px;margin:60px auto;}
+footer.note{margin-top:34px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:12px;max-width:80ch;}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1><span class="eco">ECO</span> Workflow Portal</h1>
+    <div class="whoami"><span id="who"></span><span class="rolebadge" id="role" hidden>Finance &amp; Operations</span>
+      <button class="btn small" id="signout" hidden>Sign out</button></div>
+  </header>
+
+  <!-- SIGN IN -->
+  <div class="panel signin" id="signinbox" hidden>
+    <h2>Sign in</h2>
+    <p class="meta">Use your ECO work email. We'll send you a sign-in link — no password needed.</p>
+    <label class="f">Work email<input id="si-email" type="email" placeholder="name@ecoconsult.jo"></label>
+    <div class="formfoot"><button class="btn primary" id="si-btn">Send sign-in link</button><span id="si-msg" class="mailnote"></span></div>
+  </div>
+  <div class="panel signin" id="noaccess" hidden>
+    <h2>No access</h2>
+    <p>Your email isn't on the ECO staff list. Contact Finance &amp; Operations if you believe this is a mistake.</p>
+  </div>
+
+  <div id="app" hidden>
+  <p class="sub">Requests flow: employee → line manager approval → Finance &amp; Operations execution. Projects, proposals, contacts and CVs live in the databases alongside.</p>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-view="new" aria-selected="true">New request</button>
+    <button role="tab" data-view="mine">My requests<span class="badge" id="n-mine" hidden></span></button>
+    <button role="tab" data-view="appr" id="tab-appr" hidden>Approvals<span class="badge" id="n-appr" hidden></span></button>
+    <button role="tab" data-view="queue">Team queue<span class="badge" id="n-queue" hidden></span></button>
+    <button role="tab" data-view="projects">Projects</button>
+    <button role="tab" data-view="proposals">Proposals</button>
+    <button role="tab" data-view="contacts">Contacts</button>
+    <button role="tab" data-view="cvs">CVs</button>
+    <button role="tab" data-view="staff">Staff &amp; Org</button>
+    <button role="tab" data-view="settings" id="tab-settings" hidden>Settings</button>
+  </nav>
+
+  <section id="view-new">
+    <div class="card-grid" id="chooser"></div>
+    <div id="formhost" hidden>
+      <div style="margin-bottom:14px"><button class="btn small" id="backbtn">← All request types</button></div>
+      <form class="panel" id="reqform" novalidate></form>
+      <div class="sent" id="sentbox" hidden></div>
+    </div>
+  </section>
+
+  <section id="view-mine" hidden><div class="list" id="minelist"></div>
+    <div class="empty" id="mineempty"><b>No requests yet.</b><br>Submit a form and follow its status here.</div></section>
+
+  <section id="view-appr" hidden><div class="list" id="apprlist"></div>
+    <div class="empty" id="apprempty"><b>Nothing waiting for you.</b><br>Your team's requests appear here for approval.</div></section>
+
+  <section id="view-queue" hidden>
+    <div class="filters">
+      <select id="f-type"><option value="">All types</option></select>
+      <select id="f-status"><option value="">All statuses</option>
+        <option value="pending_manager">Awaiting manager</option><option value="submitted">Submitted</option>
+        <option value="in_review">In review</option><option value="approved">Approved</option>
+        <option value="completed">Completed</option><option value="rejected">Rejected</option></select>
+    </div>
+    <div class="list" id="queuelist"></div>
+    <div class="empty" id="queueempty"><b>The queue is clear.</b></div>
+  </section>
+
+  <section id="view-projects" hidden>
+    <div class="panel"><h3>Add a project</h3><div class="fields" id="proj-form"></div>
+      <div class="formfoot"><button class="btn primary" id="proj-add">Add project</button><span class="err" id="proj-err" hidden></span></div></div>
+    <div class="filters"><select id="proj-f"><option value="">All statuses</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option><option value="on_hold">On hold</option><option value="cancelled">Cancelled</option></select>
+      <input id="proj-q" placeholder="Search projects…"></div>
+    <div class="tbl" id="proj-list"></div>
+  </section>
+
+  <section id="view-proposals" hidden>
+    <div class="panel"><h3>Add a proposal</h3><div class="fields" id="prop-form"></div>
+      <div class="formfoot"><button class="btn primary" id="prop-add">Add proposal</button><span class="err" id="prop-err" hidden></span></div></div>
+    <div class="filters"><select id="prop-f"><option value="">All statuses</option><option value="preparing">Preparing</option><option value="submitted">Submitted</option><option value="won">Won</option><option value="lost">Lost</option><option value="disregarded">Disregarded</option></select>
+      <input id="prop-q" placeholder="Search proposals…"></div>
+    <div class="tbl" id="prop-list"></div>
+  </section>
+
+  <section id="view-contacts" hidden>
+    <div class="panel"><h3>Add a contact</h3><div class="fields" id="ct-form"></div>
+      <div class="formfoot"><button class="btn primary" id="ct-add">Add contact</button><span class="err" id="ct-err" hidden></span></div></div>
+    <div class="filters"><select id="ct-f"><option value="">All types</option><option>client</option><option>donor</option><option>partner</option><option>consultant</option><option>supplier</option><option>government</option><option>other</option></select>
+      <input id="ct-q" placeholder="Search contacts…"></div>
+    <div class="tbl" id="ct-list"></div>
+  </section>
+
+  <section id="view-cvs" hidden>
+    <div class="panel"><h3>Add a CV</h3><div class="fields" id="cv-form"></div>
+      <div class="formfoot"><button class="btn primary" id="cv-add">Add CV</button><span class="err" id="cv-err" hidden></span></div></div>
+    <div class="filters"><input id="cv-q" placeholder="Search by name, specialty, language…"></div>
+    <div class="tbl" id="cv-list"></div>
+  </section>
+
+  <section id="view-staff" hidden>
+    <div class="panel"><h3>Staff directory</h3><div class="tbl" id="staff-list"></div></div>
+    <div class="panel"><h3>Organization chart &amp; reporting channels</h3><div id="orgchart"></div></div>
+  </section>
+
+  <section id="view-settings" hidden>
+    <div class="panel"><h3>Form handlers</h3>
+      <p class="meta">Who receives and processes each request type once the line manager approves.</p>
+      <div class="fields" id="handlergrid"></div>
+      <div class="formfoot"><button class="btn primary" id="savehandlers">Save handlers</button><span class="okmsg" id="handlermsg" hidden>Saved.</span></div></div>
+    <div class="panel"><h3>Approved Third-Party Register</h3>
+      <p class="meta">Due-diligence status of consultants, subcontractors and suppliers. Payments and consultancy agreements check this register.</p>
+      <div class="tbl" id="reg-list"></div>
+      <div class="formfoot">
+        <input id="nr-name" placeholder="Exact legal name" style="flex:2 1 200px;width:auto">
+        <select id="nr-type" style="width:auto"><option>Company</option><option>Individual consultant</option></select>
+        <input id="nr-exp" type="date" style="width:auto">
+        <button class="btn" id="nr-add">Add as approved</button></div></div>
+    <div class="panel"><h3>Staff admin</h3>
+      <p class="meta">Edit titles, extensions, mobiles, reporting lines and roles. Role "ops" sees the queue and settings; "admin" additionally manages staff.</p>
+      <div class="tbl" id="staffadmin"></div>
+      <div class="formfoot">
+        <input id="np-name" placeholder="Full name" style="flex:1 1 150px;width:auto">
+        <input id="np-email" placeholder="work email" style="flex:1 1 170px;width:auto">
+        <select id="np-mgr" style="width:auto"></select>
+        <button class="btn" id="np-add">Add person</button></div></div>
+  </section>
+
+  <footer class="note">ECO Workflow Portal · Procedures: ECO-PRC-001 (project opening/closure), Agreements Procedure, Invoicing Procedure, Third-Party Due Diligence Manual v1.1, QP10 work rules, ISO 9001:2015 context. All data is held in ECO's Supabase project; access requires an ECO staff sign-in. Every change is logged.</footer>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script>
+"use strict";
+/* ====== CONFIG ====== */
+const SUPABASE_URL="https://ruiayxjartgdknonopiv.supabase.co";
+const SUPABASE_KEY="sb_publishable_k3oqKvs8Haqo-XYEDB-saw_pfNJJkb3";
+const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const fmtDate=iso=>{try{return new Date(iso).toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"});}catch(e){return iso||"";}};
+
+/* ====== FORM DEFINITIONS (mirrors ECO templates & procedures) ====== */
+const FORMS={
+  duediligence:{prefix:"TPDD",title:"Third-party nomination — due diligence",
+    route:"Line manager → <b>Operations</b> run the due-diligence cycle; Management approves; register updated for 12 months.",
+    hint:"Per third party, once a year. Tier 2 from USD 50,000 expected annual value, multi-year/framework agreements, handling funds, sub-subcontracting or high-risk contexts (Manual v1.1 §1.3).",
+    fields:[{k:"thirdParty",l:"Third party (exact legal name)",req:1},{k:"tpType",l:"Type",t:"select",opts:["Company","Individual consultant"]},
+      {k:"cycle",l:"Cycle",t:"select",opts:["New onboarding","Annual renewal","Lapsed > 6 months (re-onboarding)"]},
+      {k:"expectedValue",l:"Expected annual value (USD)",t:"number",req:1},{k:"project",l:"First project / engagement"},
+      {k:"country",l:"Country of registration / residence"},{k:"services",l:"Services / technical scope",t:"textarea",req:1,full:1},
+      {k:"notes",l:"Notes",t:"textarea",full:1}]},
+  agreement:{prefix:"Agreement",title:"Agreement request — consultant / subcontractor / supplier",direct:1,
+    route:"Direct to <b>Administration</b> for template review and execution; countersigned copy due back within 7 days. No work before execution.",
+    hint:"Consultancy or subcontracting of ANY value requires a Consultancy Agreement. POs only for goods/simple services under USD 5,000 — never split purchases. Complete [●] placeholders; don't amend standard clauses.",
+    fields:[{k:"agrType",l:"Agreement type",t:"select",opts:["Consultancy Agreement – Fixed Fee – Individual","Consultancy Agreement – Fixed Fee – Company","Consultancy Agreement – Time-Based – Individual","Consultancy Agreement – Time-Based – Company","Purchase Order (goods / simple services < USD 5,000)","Amendment Annex"]},
+      {k:"counterparty",l:"Counterparty (Approved Third-Party Register)",t:"register",req:1},
+      {k:"counterpartyOther",l:"If not on the register: exact legal name"},
+      {k:"ddException",l:"Management exception (documented)",t:"select",opts:["No","Yes — documented exception"]},
+      {k:"context",l:"Engagement context (Recital A)",t:"select",opts:["Project ECO is implementing for a client","Proposal ECO is submitting to a client","Internal (PO only)"]},
+      {k:"project",l:"Client & project / proposal name",req:1},{k:"value",l:"Value / fee cap",t:"number",req:1},
+      {k:"currency",l:"Currency",t:"select",opts:["USD","JOD","EUR","AED"]},{k:"timeline",l:"Duration / key milestones"},
+      {k:"scope",l:"Scope / deliverables summary",t:"textarea",req:1,full:1},{k:"notes",l:"Notes",t:"textarea",full:1}]},
+  invoicerequest:{prefix:"Client_Inv",title:"Client invoice request",direct:1,
+    route:"Direct to <b>Administration</b>: invoice prepared within 3 working days, PM reviews, then submission (Admin handles portal uploads).",
+    hint:"Submit only once the milestone and deliverables are completed and accepted (Invoicing Procedure A). Admin tracks payment with monthly follow-up.",
+    fields:[{k:"project",l:"Project name / reference",req:1},{k:"contractRef",l:"Applicable contract / milestone",req:1},
+      {k:"amount",l:"Invoice amount",t:"number",req:1},{k:"currency",l:"Currency",t:"select",opts:["USD","JOD","EUR","AED"]},
+      {k:"milestoneDate",l:"Milestone achieved / date",req:1},
+      {k:"conditions",l:"Contractual conditions for invoicing",t:"select",opts:["Confirmed — milestone & deliverables completed and accepted","Not yet met"],req:1},
+      {k:"portalUpload",l:"Client portal submission required?",t:"select",opts:["No","Yes — Admin uploads (Masdar / ACWA / other)"]},
+      {k:"notes",l:"Notes",t:"textarea",full:1}]},
+  payment:{prefix:"Payment",title:"Payment request — subcontractor / supplier invoice",
+    route:"Line manager (PM verification) → <b>Administration</b>: commercial verification, cash-flow check, then payment per the Delegation of Authority with withholding per Jordanian law.",
+    hint:"No payment without a valid 12-month approval on the Approved Third-Party Register. Submitting confirms deliverables are complete, the invoice matches the contract/milestone, and supporting documents are provided.",
+    fields:[{k:"project",l:"Project no. & name",req:1},
+      {k:"consultant",l:"Consultant / subcontractor (Approved Third-Party Register)",t:"register",req:1},
+      {k:"consultantOther",l:"If not on the register: exact legal name"},
+      {k:"ddException",l:"Management exception (documented)",t:"select",opts:["No","Yes — documented exception"]},
+      {k:"contractRef",l:"Contract ref. & date"},{k:"deliverable",l:"Deliverable(s) covered",full:1},
+      {k:"milestone",l:"Payment milestone no."},{k:"invoiceNo",l:"Invoice no. & date"},
+      {k:"amount",l:"Amount requested (JOD)",t:"number",req:1},{k:"cumulative",l:"Cumulative paid incl. this (JOD)",t:"number"}]},
+  micropurchase:{prefix:"Micro_Purchase",title:"Micro purchase request",
+    route:"Line manager → <b>procurement</b>. Budget verification → Finance & Admin Manager → Department Head.",
+    hint:"Up to 100 JOD petty cash; above 100 JOD by cheque or bank transfer (QF-PU-01-06).",
+    fields:[{k:"project",l:"Project name / site",req:1},
+      {k:"paymentMethod",l:"Payment method",t:"select",opts:["Petty cash (≤ 100 JOD)","Cheque","Bank transfer"]},
+      {k:"notes",l:"Notes",t:"textarea",full:1}],
+    items:{label:"Items",cols:[["item","Items"],["qty","Quantity"],["unit","Price per unit (JOD)"],["vendor","Vendor name & information"],["notes","Notes"]]}},
+  transport:{prefix:"Transportation",title:"Transportation request",
+    route:"Line manager → <b>admin</b> assigns ECO vehicle & driver or arranges car rental.",
+    fields:[{k:"project",l:"Project name & code",req:1},{k:"purpose",l:"Purpose",req:1},{k:"route",l:"Route",req:1},
+      {k:"date",l:"Date / day",t:"date",req:1},{k:"timeFrom",l:"From (time)"},{k:"timeTo",l:"To (time)"},{k:"passengers",l:"Passengers",t:"number"}]},
+  travel:{prefix:"Travel",title:"Travel request",
+    route:"Line manager → <b>admin</b> completes booking (flights, hotel, per-diem, car rental).",
+    fields:[{k:"traveler",l:"Traveler name",req:1},{k:"assignment",l:"Assignment",req:1},{k:"project",l:"Project name & code",req:1},
+      {k:"route",l:"Route / destination",req:1},{k:"from",l:"Travel duration — from",t:"date",req:1},{k:"to",l:"Travel duration — to",t:"date"}]},
+  travelexp:{prefix:"Local_Travel",title:"Travel expenses report",
+    route:"Line manager → <b>finance</b> records against the project. Attach receipts to the hard-copy file (QF-ADM-01-03).",
+    fields:[{k:"traveler",l:"Name",req:1},{k:"assignment",l:"Travel assignment",req:1},{k:"project",l:"Client / project",req:1},
+      {k:"travelReqNo",l:"Travel request no."},{k:"duration",l:"Duration & location"},{k:"days",l:"Days",t:"number"},
+      {k:"currency",l:"Currency",t:"select",opts:["JOD","USD","AED","EUR"]}],
+    items:{label:"Expense lines",cols:[["date","Date"],["desc","Item / description"],["paidBy","Paid by (ECO / Traveler)"],["method","Payment method"],["amount","Amount"]]}},
+  event:{prefix:"Event",title:"Event arrangement",
+    route:"Line manager → <b>admin</b> handles venue, logistics & procurement; Director approves (QF-ADM-01-05).",
+    fields:[{k:"eventType",l:"Type",t:"select",opts:["Workshop","Training","Conference","Meeting","Other"]},
+      {k:"project",l:"Project / proposal name & code",req:1},{k:"purpose",l:"Purpose",req:1,full:1},
+      {k:"dateFrom",l:"Event date — from",t:"date",req:1},{k:"dateTo",l:"Event date — to",t:"date"},
+      {k:"timeFrom",l:"Event time — from"},{k:"timeTo",l:"Event time — to"},{k:"location",l:"Location"},{k:"venueSpecs",l:"Venue specs"},
+      {k:"attendeesEco",l:"Attendees (ECO)",t:"number"},{k:"attendeesClients",l:"Attendees (clients)",t:"number"},{k:"attendeesInvitees",l:"Attendees (invitees)",t:"number"},
+      {k:"coffee",l:"Coffee break",t:"select",opts:["None","Once","Continuous"]},{k:"lunch",l:"Lunch",t:"select",opts:["No","Yes"]},
+      {k:"accommodation",l:"Accommodation",t:"select",opts:["No","Yes"]},
+      {k:"setup",l:"Venue setup",t:"select",opts:["Round table","Board table","Theatre","U-shape","Classroom","Other"]},
+      {k:"equipment",l:"Required equipment / services",t:"textarea",full:1}]},
+  eventexp:{prefix:"Event_Exp",title:"Event expenses",
+    route:"Line manager → <b>admin</b> reviews; finance records against the project (QF-ADM-01-06).",
+    fields:[{k:"eventName",l:"Event name",req:1},{k:"project",l:"Project number",req:1},{k:"location",l:"Location"},{k:"dates",l:"Date(s) & day(s)"}],
+    items:{label:"Event expenses",cols:[["item","Expense item"],["vendor","Vendor name"],["amount","Expenses in JOD"]]}},
+  riskreport:{prefix:"QIR",title:"Issue, risk or improvement report",direct:1,
+    route:"Direct to the <b>management representative</b> — feeds the SWOT / strategy and KPI reviews (ISO 9001).",
+    fields:[{k:"category",l:"Category",t:"select",opts:["Quality","Environment","Health & safety","Client / interested party","Supplier","Process improvement","Other"]},
+      {k:"related",l:"Related project / process"},{k:"description",l:"Issue / risk / opportunity",t:"textarea",req:1,full:1},
+      {k:"suggestion",l:"Suggested action",t:"textarea",full:1}]},
+};
+const GROUPS=[
+  ["Third parties & agreements",["duediligence","agreement"]],
+  ["Invoicing & payments",["invoicerequest","payment"]],
+  ["Procurement & logistics",["micropurchase","transport","travel","travelexp"]],
+  ["Events",["event","eventexp"]],
+  ["Quality & improvement (ISO 9001)",["riskreport"]],
+];
+const STATUS={pending_manager:"Awaiting manager",submitted:"Submitted",in_review:"In review",approved:"Approved",completed:"Completed",rejected:"Rejected"};
+
+/* ====== STATE ====== */
+let me=null, people=[], handlers={}, register=[], rows=[], events={}, projects=[], proposals=[], contacts=[], cvs=[];
+let currentForm=null; const openRows=new Set();
+const personOf=id=>people.find(p=>p.id===id)||null;
+const isOps=()=>me&&(me.role==="ops"||me.role==="admin");
+const regSlug=n=>String(n||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,80);
+const regValid=e=>!!e&&(e.status==="approved"||e.status==="conditions")&&(!e.expires_on||e.expires_on>=todayStr());
+function regLabel(e){
+  if(!e)return "not on the register";
+  if(regValid(e))return (e.status==="conditions"?"Approved with conditions":"Approved")+(e.expires_on?" until "+e.expires_on:"");
+  if(e.status==="approved"||e.status==="expired")return "Expired"+(e.expires_on?" "+e.expires_on:"")+" — renewal needed";
+  if(e.status==="pending")return "Due diligence in progress";
+  if(e.status==="rejected")return "Rejected";
+  return e.status||"";
+}
+
+/* ====== AUTH ====== */
+$("si-btn").addEventListener("click",async()=>{
+  const email=$("si-email").value.trim().toLowerCase();
+  if(!email)return;
+  const {error}=await supa.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
+  $("si-msg").textContent=error?("Couldn't send the link: "+error.message):"Check your inbox for the sign-in link.";
+});
+$("signout").addEventListener("click",async()=>{await supa.auth.signOut();location.reload();});
+supa.auth.onAuthStateChange((_e,session)=>{ boot(session); });
+
+let booted=false;
+async function boot(session){
+  if(!session){ $("signinbox").hidden=false; $("app").hidden=true; $("noaccess").hidden=true; $("who").textContent=""; $("signout").hidden=true; booted=false; return; }
+  if(booted)return; booted=true;
+  $("signinbox").hidden=true; $("signout").hidden=false;
+  const email=(session.user.email||"").toLowerCase();
+  const {data:pp}=await supa.from("people").select("*").order("name");
+  people=pp||[];
+  me=people.find(p=>p.email===email&&p.active)||null;
+  if(!me){ $("noaccess").hidden=false; $("who").textContent=email; return; }
+  $("who").textContent=me.name; $("role").hidden=!isOps();
+  $("tab-settings").hidden=!isOps();
+  $("app").hidden=false;
+  renderChooser();
+  await loadAll();
+}
+supa.auth.getSession().then(({data})=>boot(data.session));
+
+/* ====== DATA ====== */
+async function loadAll(){
+  const [h,r,q,ev,pj,pr,ct,cv]=await Promise.all([
+    supa.from("handlers").select("*"),
+    supa.from("register").select("*").order("name"),
+    supa.from("requests").select("*").order("created_at",{ascending:false}).limit(1000),
+    supa.from("request_events").select("*").order("at"),
+    supa.from("projects").select("*").order("created_at",{ascending:false}),
+    supa.from("proposals").select("*").order("created_at",{ascending:false}),
+    supa.from("contacts").select("*").order("name"),
+    supa.from("cvs").select("*").order("person_name"),
+  ]);
+  handlers={}; (h.data||[]).forEach(x=>handlers[x.form_type]=x.person_id);
+  register=r.data||[]; rows=q.data||[];
+  events={}; (ev.data||[]).forEach(e=>{(events[e.request_id]=events[e.request_id]||[]).push(e);});
+  projects=pj.data||[]; proposals=pr.data||[]; contacts=ct.data||[]; cvs=cv.data||[];
+  renderLists(); renderDb(); renderStaff(); renderSettings();
+}
+
+/* ====== TABS ====== */
+$("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("[data-view]"); if(!b)return;
+  document.querySelectorAll("#tabs [data-view]").forEach(x=>{
+    x.setAttribute("aria-selected",x===b?"true":"false");
+    const v=document.getElementById("view-"+x.dataset.view); if(v)v.hidden=x!==b;
+  });
+});
+
+/* ====== REQUEST FORMS ====== */
+function renderChooser(){
+  $("chooser").innerHTML=GROUPS.map(([label,keys])=>
+    `<h2 class="group-h">${esc(label)}</h2>`+keys.map(k=>{const f=FORMS[k];
+      return `<button type="button" class="card" data-form="${k}"><h3>${esc(f.title)}</h3><span class="route">${f.route}</span></button>`;}).join("")).join("");
+  $("chooser").querySelectorAll(".card").forEach(b=>b.addEventListener("click",()=>openForm(b.dataset.form)));
+  const ft=$("f-type"); ft.length=1;
+  Object.entries(FORMS).forEach(([k,f])=>{const o=document.createElement("option");o.value=k;o.textContent=f.title;ft.appendChild(o);});
+}
+function fieldHtml(f){
+  const id="fld-"+f.k, req=f.req?"required":"";
+  let inp;
+  if(f.t==="textarea")inp=`<textarea id="${id}" ${req}></textarea>`;
+  else if(f.t==="select")inp=`<select id="${id}">${f.opts.map(o=>`<option>${o}</option>`).join("")}</select>`;
+  else if(f.t==="register")inp=`<select id="${id}"><option value="">— select third party —</option>
+      ${register.map(e=>`<option value="${esc(e.id)}">${esc(e.name)} — ${esc(regLabel(e))}</option>`).join("")}
+      <option value="__other__">Not on the register</option></select>`;
+  else inp=`<input id="${id}" type="${f.t||"text"}" ${f.t==="number"?'min="0" step="any"':""} ${req}>`;
+  return `<label class="f ${f.full?"full":""}" id="wrap-${f.k}">${esc(f.l)}${f.req?" *":""}${inp}</label>`;
+}
+const itemRow=(cols,i)=>`<tr>${cols.map(([k,l])=>`<td><input data-col="${k}" aria-label="${esc(l)} row ${i+1}"></td>`).join("")}</tr>`;
+function openForm(key){
+  currentForm=key; const f=FORMS[key];
+  $("chooser").hidden=true; $("formhost").hidden=false; $("sentbox").hidden=true; $("reqform").hidden=false;
+  const mgr=(!f.direct&&me.manager_id)?personOf(me.manager_id):null;
+  let html=`<h2>${esc(f.title)}</h2><div class="meta">${f.route}${mgr?` · Your approver: <b>${esc(mgr.name)}</b>`:""}</div>
+    ${f.hint?`<div class="notice">${esc(f.hint)}</div>`:""}
+    <div class="fields">${f.fields.map(fieldHtml).join("")}</div>`;
+  if(f.items){
+    html+=`<div class="items" style="margin-top:16px"><h3>${esc(f.items.label)}</h3><div class="itemswrap"><table>
+      <thead><tr>${f.items.cols.map(c=>`<th>${esc(c[1])}</th>`).join("")}</tr></thead>
+      <tbody id="itembody">${[0,1,2].map(i=>itemRow(f.items.cols,i)).join("")}</tbody></table></div>
+      <div style="margin-top:6px"><button type="button" class="btn small" id="addrow">+ Add line</button></div></div>`;
+  }
+  html+=`<div class="formfoot"><button class="btn primary" type="submit" id="submitbtn">Submit request</button><span class="err" id="formerr" hidden></span></div>`;
+  $("reqform").innerHTML=html;
+  const tf=$("fld-traveler"); if(tf)tf.value=me.name;
+  const add=$("addrow"); if(add)add.addEventListener("click",()=>{const b=$("itembody");if(b.children.length<12)b.insertAdjacentHTML("beforeend",itemRow(f.items.cols,b.children.length));});
+  const regKey=key==="payment"?"consultant":(key==="agreement"?"counterparty":null);
+  if(regKey){
+    const sel=$("fld-"+regKey);
+    const info=document.createElement("div");info.className="mailnote";sel.closest("label").appendChild(info);
+    const upd=()=>{const e=register.find(x=>x.id===sel.value);
+      info.textContent=sel.value==="__other__"?"Not on the register — due diligence required first.":(sel.value?("Register: "+regLabel(e)):"");};
+    sel.addEventListener("change",upd);upd();
+  }
+}
+$("backbtn").addEventListener("click",()=>{$("formhost").hidden=true;$("chooser").hidden=false;});
+
+$("reqform").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const f=FORMS[currentForm]; const errEl=$("formerr"); errEl.hidden=true;
+  const fail=m=>{errEl.textContent=m;errEl.hidden=false;};
+  const data={};
+  for(const fl of f.fields){
+    const v=$("fld-"+fl.k).value.trim();
+    if(fl.req&&!v){$("fld-"+fl.k).focus();return fail("Please fill the required fields (*).");}
+    if(v)data[fl.k]=v;
+  }
+  let items=[];
+  if(f.items)for(const tr of $("itembody").children){const row={};let any=false;
+    tr.querySelectorAll("input").forEach(inp=>{const v=inp.value.trim();if(v){row[inp.dataset.col]=v;any=true;}});
+    if(any)items.push(row);}
+  const regKey=currentForm==="payment"?"consultant":(currentForm==="agreement"?"counterparty":null);
+  if(regKey){
+    const otherKey=regKey+"Other";
+    const needsDD=currentForm==="payment"||/Consultancy|Amendment/.test(data.agrType||"");
+    const sel=data[regKey]||""; const entry=register.find(x=>x.id===sel);
+    const exception=data.ddException==="Yes — documented exception";
+    if(sel==="__other__"){
+      if(!data[otherKey]){$("fld-"+otherKey).focus();return fail("Enter the third party's exact legal name.");}
+      if(needsDD&&!exception)return fail("No valid approval on the Approved Third-Party Register. Submit a Third-party nomination first, or select the documented Management exception.");
+      data[regKey]=data[otherKey];
+    }else{
+      if(!entry)return fail("Select the third party from the register.");
+      if(needsDD&&!regValid(entry)&&!exception)return fail("Per the Due Diligence Manual, no contract, PO or payment without a valid register approval ("+regLabel(entry)+").");
+      data[regKey]=entry.name; data.registerStatus=regLabel(entry);
+    }
+    delete data[otherKey];
+  }
+  if(currentForm==="invoicerequest"&&data.conditions!=="Confirmed — milestone & deliverables completed and accepted")
+    return fail("Per the Invoicing Procedure, request the invoice only once the milestone and deliverables are completed and accepted.");
+  const btn=$("submitbtn");btn.disabled=true;
+  try{
+    const {data:ref,error:er}=await supa.rpc("next_ref",{p_prefix:f.prefix,p_form_type:currentForm});
+    if(er)throw er;
+    const mgr=(!f.direct&&me.manager_id)?me.manager_id:null;
+    const status=mgr?"pending_manager":"submitted";
+    const {data:ins,error}=await supa.from("requests").insert({ref,type:currentForm,status,person_id:me.id,
+      manager_id:mgr,confidential:false,fields:data,items}).select().single();
+    if(error)throw error;
+    await supa.from("request_events").insert({request_id:ins.id,action:"Submitted by "+me.name,actor_id:me.id});
+    if(currentForm==="duediligence"&&data.thirdParty){
+      const slug=regSlug(data.thirdParty);
+      if(slug&&!register.find(x=>x.id===slug))
+        await supa.from("register").insert({id:slug,name:data.thirdParty,type:data.tpType||"",status:"pending"});
+    }
+    $("reqform").hidden=true;
+    const mgrP=mgr?personOf(mgr):null;
+    $("sentbox").innerHTML=`Request <b>${esc(ref)}</b> submitted${mgrP?` — awaiting approval from <b>${esc(mgrP.name)}</b>`:""}. Follow it under <i>My requests</i>.`;
+    $("sentbox").hidden=false;
+    await loadAll();
+  }catch(err){fail("Couldn't submit: "+(err.message||"please try again."));}
+  btn.disabled=false;
+});
+
+/* ====== REQUEST LISTS ====== */
+function detailHtml(r){
+  const f=FORMS[r.type]||{fields:[]};
+  const kv=(f.fields||[]).filter(fl=>r.fields&&r.fields[fl.k]&&fl.t!=="register"||((fl.k==="consultant"||fl.k==="counterparty")&&r.fields[fl.k]))
+    .map(fl=>`<dt>${esc(fl.l)}</dt><dd>${esc(r.fields[fl.k])}</dd>`).join("");
+  let items="";
+  if(f.items&&r.items&&r.items.length)
+    items=`<div class="itemswrap"><table><thead><tr>${f.items.cols.map(c=>`<th>${esc(c[1])}</th>`).join("")}</tr></thead>
+      <tbody>${r.items.map(row=>`<tr>${f.items.cols.map(c=>`<td>${esc(row[c[0]]||"")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  let dd="";
+  const regName=r.fields&&(r.type==="payment"?r.fields.consultant:(r.type==="agreement"?r.fields.counterparty:null));
+  if(regName){
+    const e=register.find(x=>x.id===regSlug(regName))||register.find(x=>x.name===regName);
+    dd=`<div class="mailnote">Approved Third-Party Register: ${esc(regLabel(e))}${r.fields.ddException==="Yes — documented exception"?" · Management exception declared":""}</div>`;
+  }
+  const hist=(events[r.id]||[]).map(h=>`<li>${esc(h.action)}, ${esc(fmtDate(h.at))}${h.note?` · “${esc(h.note)}”`:""}</li>`).join("");
+  return `<dl class="kv">${kv}</dl>${items}${dd}<ul class="hist">${hist}</ul>`;
+}
+function actionBtns(r,mode){
+  const b=(act,label,cls="")=>`<button type="button" class="btn small ${cls}" data-act="${act}" data-id="${r.id}">${label}</button>`;
+  let btns="";
+  if(mode==="manager"&&r.status==="pending_manager")btns=b("mgr_approve","Approve & forward","primary")+b("rejected","Reject","danger");
+  else if(mode==="ops"){
+    if(r.status==="submitted")btns=b("in_review","Start review")+b("approved","Approve","primary")+b("rejected","Reject","danger");
+    else if(r.status==="in_review")btns=b("approved","Approve","primary")+b("rejected","Reject","danger");
+    else if(r.status==="approved")btns=b("completed","Mark completed","primary");
+  }
+  if(!btns)return "";
+  return `<div class="actions">${btns}<input id="note-${r.id}" placeholder="Note (optional — required to reject)" maxlength="300"></div>`;
+}
+function rowHtml(r,mode){
+  const f=FORMS[r.type]||{title:r.type};
+  const open=openRows.has(r.id);
+  const waiting=mode==="ops"&&r.status==="pending_manager";
+  const p=personOf(r.person_id);
+  return `<div class="req-row">
+    <div class="req-head" data-toggle="${r.id}" role="button" tabindex="0">
+      <span class="ref">${esc(r.ref)}</span>
+      <span class="ttl">${esc(f.title)}${r.fields&&r.fields.project?` · ${esc(r.fields.project)}`:""}</span>
+      ${mode!=="mine"?`<span class="by">${esc(p?p.name:"")}</span>`:""}
+      <span class="by">${esc(fmtDate(r.created_at))}</span>
+      ${r.confidential?'<span class="conf">Confidential</span>':''}
+      <span class="chip st-${esc(r.status)}">${STATUS[r.status]||r.status}</span>
+    </div>
+    ${open?`<div class="req-body">${detailHtml(r)}
+      ${waiting?`<div class="waithint">Awaiting line-manager approval — actions unlock once approved.</div>`:""}
+      ${mode==="manager"?actionBtns(r,"manager"):""}
+      ${mode==="ops"&&isOps()&&!waiting?actionBtns(r,"ops"):""}</div>`:""}
+  </div>`;
+}
+function renderLists(){
+  if(!me)return;
+  const mine=rows.filter(r=>r.person_id===me.id);
+  $("minelist").innerHTML=mine.map(r=>rowHtml(r,"mine")).join("");
+  $("mineempty").hidden=mine.length>0;
+  $("n-mine").textContent=mine.length;$("n-mine").hidden=!mine.length;
+  const isMgr=people.some(p=>p.manager_id===me.id);
+  $("tab-appr").hidden=!isMgr;
+  const appr=rows.filter(r=>r.status==="pending_manager"&&r.manager_id===me.id);
+  $("apprlist").innerHTML=appr.map(r=>rowHtml(r,"manager")).join("");
+  $("apprempty").hidden=appr.length>0;
+  $("n-appr").textContent=appr.length;$("n-appr").hidden=!appr.length;
+  const ftv=$("f-type").value,fsv=$("f-status").value;
+  const q=rows.filter(r=>(!ftv||r.type===ftv)&&(!fsv||r.status===fsv));
+  $("queuelist").innerHTML=q.map(r=>rowHtml(r,"ops")).join("");
+  $("queueempty").hidden=q.length>0;
+  const pending=rows.filter(r=>r.status==="submitted"||r.status==="in_review").length;
+  $("n-queue").textContent=pending;$("n-queue").hidden=!pending;
+}
+document.addEventListener("click",async e=>{
+  const head=e.target.closest("[data-toggle]");
+  if(head&&!e.target.closest("button,input,select")){
+    const id=head.dataset.toggle;
+    openRows.has(id)?openRows.delete(id):openRows.add(id);
+    renderLists();return;
+  }
+  const act=e.target.closest("[data-act]");
+  if(act)doAction(act.dataset.id,act.dataset.act);
+});
+let acting=false;
+async function doAction(id,act){
+  if(acting)return;
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  const noteEl=$("note-"+id);const note=noteEl?noteEl.value.trim():"";
+  if(act==="rejected"&&!note){if(noteEl){noteEl.placeholder="A short reason is required to reject";noteEl.focus();}return;}
+  acting=true;
+  const newStatus=act==="mgr_approve"?"submitted":act;
+  const label=act==="mgr_approve"?`Approved by line manager (${me.name})`:`${STATUS[act]||act} by ${me.name}`;
+  try{
+    const {error}=await supa.from("requests").update({status:newStatus}).eq("id",id);
+    if(error)throw error;
+    await supa.from("request_events").insert({request_id:id,action:label,note:note||null,actor_id:me.id});
+    if(r.type==="duediligence"&&r.fields&&r.fields.thirdParty){
+      const slug=regSlug(r.fields.thirdParty);
+      if(slug&&(newStatus==="approved"||newStatus==="completed")){
+        const exp=new Date(Date.now()+365*86400000).toISOString().slice(0,10);
+        await supa.from("register").upsert({id:slug,name:r.fields.thirdParty,type:r.fields.tpType||"",
+          status:"approved",approved_on:todayStr(),expires_on:exp,updated_at:new Date().toISOString()});
+      }else if(slug&&newStatus==="rejected"){
+        await supa.from("register").upsert({id:slug,name:r.fields.thirdParty,type:r.fields.tpType||"",status:"rejected",updated_at:new Date().toISOString()});
+      }
+    }
+    await loadAll();
+  }catch(err){}
+  acting=false;
+}
+["f-type","f-status"].forEach(id=>$(id).addEventListener("change",renderLists));
+
+/* ====== PROJECTS / PROPOSALS / CONTACTS / CVS ====== */
+const inp=(id,l,t="text",full)=>`<label class="f ${full?"full":""}">${l}<input id="${id}" type="${t}"></label>`;
+const selp=(id,l,opts)=>`<label class="f">${l}<select id="${id}">${opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join("")}</select></label>`;
+const pplOpts=()=>people.filter(p=>p.active).map(p=>[p.id,p.name]);
+function renderDbForms(){
+  $("proj-form").innerHTML=inp("pj-name","Project name *")+inp("pj-client","Client")
+    +selp("pj-pm","Project manager",pplOpts())+inp("pj-start","Start date","date")+inp("pj-end","End date","date")
+    +inp("pj-value","Value","number")+selp("pj-cur","Currency",[["USD","USD"],["JOD","JOD"],["EUR","EUR"],["AED","AED"]])
+    +selp("pj-status","Status",[["ongoing","Ongoing"],["on_hold","On hold"],["completed","Completed"]])
+    +inp("pj-desc","Description","text",1);
+  $("prop-form").innerHTML=inp("pr-name","Proposal name *")+inp("pr-client","Client")+inp("pr-donor","Donor / funder")
+    +selp("pr-lead","Lead",pplOpts())+inp("pr-due","Submission due date","date")+inp("pr-value","Value","number")
+    +selp("pr-cur","Currency",[["USD","USD"],["JOD","JOD"],["EUR","EUR"],["AED","AED"]])
+    +selp("pr-status","Status",[["preparing","Preparing"],["submitted","Submitted"],["won","Won"],["lost","Lost"],["disregarded","Disregarded"]])
+    +inp("pr-notes","Notes","text",1);
+  $("ct-form").innerHTML=inp("ct-name","Name *")+inp("ct-org","Organization")+inp("ct-pos","Position")
+    +inp("ct-email","Email","email")+inp("ct-phone","Phone")
+    +selp("ct-type","Type",[["client","Client"],["donor","Donor"],["partner","Partner"],["consultant","Consultant"],["supplier","Supplier"],["government","Government"],["other","Other"]])
+    +selp("ct-proj","Project",[["",""],...projects.map(p=>[p.id,(p.code?p.code+" ":"")+p.name])])
+    +inp("ct-notes","Notes","text",1);
+  $("cv-form").innerHTML=inp("cvf-name","Name *")+inp("cvf-email","Email","email")+inp("cvf-spec","Specialty / sector")
+    +inp("cvf-nat","Nationality")+inp("cvf-lang","Languages")+inp("cvf-years","Years of experience","number")
+    +inp("cvf-edu","Education")+inp("cvf-url","CV file link (server / SharePoint)")+inp("cvf-sum","Summary","text",1);
+}
+$("proj-add").addEventListener("click",async()=>{
+  const name=$("pj-name").value.trim();const err=$("proj-err");err.hidden=true;
+  if(!name){err.textContent="Project name is required.";err.hidden=false;return;}
+  const {data:code}=await supa.rpc("next_ref",{p_prefix:"ECO",p_form_type:"project"});
+  const {error}=await supa.from("projects").insert({code:(code||"").replace(/_/g,"-"),name,client:$("pj-client").value.trim()||null,
+    pm_id:$("pj-pm").value||null,start_date:$("pj-start").value||null,end_date:$("pj-end").value||null,
+    value:$("pj-value").value||null,currency:$("pj-cur").value,status:$("pj-status").value,
+    description:$("pj-desc").value.trim()||null,created_by:me.id});
+  if(error){err.textContent=error.message;err.hidden=false;return;}
+  $("pj-name").value="";await loadAll();
+});
+$("prop-add").addEventListener("click",async()=>{
+  const name=$("pr-name").value.trim();const err=$("prop-err");err.hidden=true;
+  if(!name){err.textContent="Proposal name is required.";err.hidden=false;return;}
+  const {data:ref}=await supa.rpc("next_ref",{p_prefix:"PRO",p_form_type:"proposal"});
+  const {error}=await supa.from("proposals").insert({ref:(ref||"").replace(/_/g,"-"),name,client:$("pr-client").value.trim()||null,
+    donor:$("pr-donor").value.trim()||null,lead_id:$("pr-lead").value||null,due_date:$("pr-due").value||null,
+    value:$("pr-value").value||null,currency:$("pr-cur").value,status:$("pr-status").value,
+    notes:$("pr-notes").value.trim()||null,created_by:me.id});
+  if(error){err.textContent=error.message;err.hidden=false;return;}
+  $("pr-name").value="";await loadAll();
+});
+$("ct-add").addEventListener("click",async()=>{
+  const name=$("ct-name").value.trim();const err=$("ct-err");err.hidden=true;
+  if(!name){err.textContent="Name is required.";err.hidden=false;return;}
+  const {error}=await supa.from("contacts").insert({name,organization:$("ct-org").value.trim()||null,position:$("ct-pos").value.trim()||null,
+    email:$("ct-email").value.trim()||null,phone:$("ct-phone").value.trim()||null,type:$("ct-type").value,
+    project_id:$("ct-proj").value||null,notes:$("ct-notes").value.trim()||null,created_by:me.id});
+  if(error){err.textContent=error.message;err.hidden=false;return;}
+  $("ct-name").value="";await loadAll();
+});
+$("cv-add").addEventListener("click",async()=>{
+  const name=$("cvf-name").value.trim();const err=$("cv-err");err.hidden=true;
+  if(!name){err.textContent="Name is required.";err.hidden=false;return;}
+  const {error}=await supa.from("cvs").insert({person_name:name,email:$("cvf-email").value.trim()||null,
+    specialty:$("cvf-spec").value.trim()||null,nationality:$("cvf-nat").value.trim()||null,languages:$("cvf-lang").value.trim()||null,
+    years_experience:$("cvf-years").value||null,education:$("cvf-edu").value.trim()||null,
+    file_url:$("cvf-url").value.trim()||null,summary:$("cvf-sum").value.trim()||null,created_by:me.id});
+  if(error){err.textContent=error.message;err.hidden=false;return;}
+  $("cvf-name").value="";await loadAll();
+});
+function renderDb(){
+  renderDbForms();
+  const pf=$("proj-f").value,pq=($("proj-q").value||"").toLowerCase();
+  $("proj-list").innerHTML=`<table><thead><tr><th>Code</th><th>Project</th><th>Client</th><th>PM</th><th>Dates</th><th>Value</th><th>Status</th></tr></thead><tbody>${
+    projects.filter(p=>(!pf||p.status===pf)&&(!pq||(p.name+" "+(p.client||"")+" "+(p.code||"")).toLowerCase().includes(pq)))
+    .map(p=>`<tr><td>${esc(p.code||"")}</td><td>${esc(p.name)}</td><td>${esc(p.client||"")}</td><td>${esc((personOf(p.pm_id)||{}).name||"")}</td>
+      <td>${esc(p.start_date||"")} → ${esc(p.end_date||"")}</td><td>${p.value?esc(p.value)+" "+esc(p.currency||""):""}</td>
+      <td><span class="chip st-${esc(p.status)}">${esc(p.status)}</span></td></tr>`).join("")}</tbody></table>`;
+  const prf=$("prop-f").value,prq=($("prop-q").value||"").toLowerCase();
+  $("prop-list").innerHTML=`<table><thead><tr><th>Ref</th><th>Proposal</th><th>Client</th><th>Donor</th><th>Lead</th><th>Due</th><th>Value</th><th>Status</th></tr></thead><tbody>${
+    proposals.filter(p=>(!prf||p.status===prf)&&(!prq||(p.name+" "+(p.client||"")+" "+(p.donor||"")).toLowerCase().includes(prq)))
+    .map(p=>`<tr><td>${esc(p.ref||"")}</td><td>${esc(p.name)}</td><td>${esc(p.client||"")}</td><td>${esc(p.donor||"")}</td>
+      <td>${esc((personOf(p.lead_id)||{}).name||"")}</td><td>${esc(p.due_date||"")}</td>
+      <td>${p.value?esc(p.value)+" "+esc(p.currency||""):""}</td><td><span class="chip st-${esc(p.status)}">${esc(p.status)}</span></td></tr>`).join("")}</tbody></table>`;
+  const cf=$("ct-f").value,cq=($("ct-q").value||"").toLowerCase();
+  $("ct-list").innerHTML=`<table><thead><tr><th>Name</th><th>Organization</th><th>Position</th><th>Email</th><th>Phone</th><th>Type</th><th>Project</th></tr></thead><tbody>${
+    contacts.filter(c=>(!cf||c.type===cf)&&(!cq||(c.name+" "+(c.organization||"")+" "+(c.email||"")).toLowerCase().includes(cq)))
+    .map(c=>{const pj=projects.find(p=>p.id===c.project_id);
+      return `<tr><td>${esc(c.name)}</td><td>${esc(c.organization||"")}</td><td>${esc(c.position||"")}</td>
+      <td>${esc(c.email||"")}</td><td>${esc(c.phone||"")}</td><td>${esc(c.type||"")}</td><td>${esc(pj?pj.name:"")}</td></tr>`;}).join("")}</tbody></table>`;
+  const vq=($("cv-q").value||"").toLowerCase();
+  $("cv-list").innerHTML=`<table><thead><tr><th>Name</th><th>Specialty</th><th>Nationality</th><th>Languages</th><th>Yrs</th><th>Education</th><th>CV</th></tr></thead><tbody>${
+    cvs.filter(c=>!vq||(c.person_name+" "+(c.specialty||"")+" "+(c.languages||"")+" "+(c.summary||"")).toLowerCase().includes(vq))
+    .map(c=>`<tr><td>${esc(c.person_name)}</td><td>${esc(c.specialty||"")}</td><td>${esc(c.nationality||"")}</td>
+      <td>${esc(c.languages||"")}</td><td>${esc(c.years_experience||"")}</td><td>${esc(c.education||"")}</td>
+      <td>${c.file_url?`<a href="${esc(c.file_url)}" target="_blank" rel="noopener">open</a>`:""}</td></tr>`).join("")}</tbody></table>`;
+}
+["proj-f","proj-q","prop-f","prop-q","ct-f","ct-q","cv-q"].forEach(id=>{
+  $(id).addEventListener("input",renderDb);$(id).addEventListener("change",renderDb);
+});
+
+/* ====== STAFF & ORG CHART ====== */
+function renderStaff(){
+  const act=people.filter(p=>p.active);
+  $("staff-list").innerHTML=`<table><thead><tr><th>Name</th><th>Title</th><th>Department</th><th>Email</th><th>Ext.</th><th>Mobile</th><th>Reports to</th></tr></thead><tbody>${
+    act.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.title||"")}</td><td>${esc(p.dept||"")}</td>
+      <td>${esc(p.email)}</td><td>${esc(p.extension||"")}</td><td>${esc(p.mobile||"")}</td>
+      <td>${esc((personOf(p.manager_id)||{}).name||"—")}</td></tr>`).join("")}</tbody></table>`;
+  const roots=act.filter(p=>!p.manager_id||!act.find(x=>x.id===p.manager_id));
+  const node=p=>{
+    const kids=act.filter(x=>x.manager_id===p.id);
+    return `<li><span class="node"><b>${esc(p.name)}</b><span>${esc(p.title||p.dept||"")}${p.extension?" · ext "+esc(p.extension):""}</span></span>
+      ${kids.length?`<ul>${kids.map(node).join("")}</ul>`:""}</li>`;
+  };
+  $("orgchart").innerHTML=`<ul class="org">${roots.map(node).join("")}</ul>`;
+}
+
+/* ====== SETTINGS (ops) ====== */
+function renderSettings(){
+  if(!isOps())return;
+  $("handlergrid").innerHTML=Object.entries(FORMS).map(([k,f])=>
+    `<label class="f">${esc(f.title)}<select id="h-${k}">${people.filter(p=>p.active).map(p=>`<option value="${p.id}" ${handlers[k]===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></label>`).join("");
+  $("reg-list").innerHTML=`<table><thead><tr><th>Legal name</th><th>Type</th><th>Status</th><th>Approved</th><th>Expires</th><th></th></tr></thead><tbody>${
+    register.map(e=>`<tr>
+      <td><input id="rg-name-${esc(e.id)}" value="${esc(e.name)}"></td>
+      <td><select id="rg-type-${esc(e.id)}"><option ${e.type==="Company"?"selected":""}>Company</option><option ${e.type==="Individual consultant"?"selected":""}>Individual consultant</option></select></td>
+      <td><select id="rg-status-${esc(e.id)}">${["pending","approved","conditions","rejected","expired"].map(s=>`<option ${e.status===s?"selected":""}>${s}</option>`).join("")}</select></td>
+      <td><input id="rg-app-${esc(e.id)}" type="date" value="${esc(e.approved_on||"")}"></td>
+      <td><input id="rg-exp-${esc(e.id)}" type="date" value="${esc(e.expires_on||"")}"></td>
+      <td><button class="btn small" data-rsave="${esc(e.id)}">Save</button> <button class="btn small danger" data-rdel="${esc(e.id)}">Remove</button></td></tr>`).join("")}</tbody></table>`;
+  $("staffadmin").innerHTML=`<table><thead><tr><th>Name</th><th>Title</th><th>Email</th><th>Ext.</th><th>Mobile</th><th>Manager</th><th>Role</th><th>Active</th><th></th></tr></thead><tbody>${
+    people.map(p=>`<tr>
+      <td><input id="sp-name-${esc(p.id)}" value="${esc(p.name)}"></td>
+      <td><input id="sp-title-${esc(p.id)}" value="${esc(p.title||"")}"></td>
+      <td><input id="sp-email-${esc(p.id)}" value="${esc(p.email)}"></td>
+      <td><input id="sp-ext-${esc(p.id)}" value="${esc(p.extension||"")}" style="min-width:60px"></td>
+      <td><input id="sp-mob-${esc(p.id)}" value="${esc(p.mobile||"")}" style="min-width:110px"></td>
+      <td><select id="sp-mgr-${esc(p.id)}"><option value="">— none —</option>${people.filter(x=>x.id!==p.id).map(x=>`<option value="${x.id}" ${p.manager_id===x.id?"selected":""}>${esc(x.name)}</option>`).join("")}</select></td>
+      <td><select id="sp-role-${esc(p.id)}">${["staff","ops","admin"].map(r=>`<option ${p.role===r?"selected":""}>${r}</option>`).join("")}</select></td>
+      <td><select id="sp-act-${esc(p.id)}"><option value="true" ${p.active?"selected":""}>yes</option><option value="false" ${!p.active?"selected":""}>no</option></select></td>
+      <td><button class="btn small" data-psave="${esc(p.id)}">Save</button></td></tr>`).join("")}</tbody></table>`;
+  $("np-mgr").innerHTML=`<option value="">— manager —</option>`+people.filter(p=>p.active).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+}
+$("savehandlers").addEventListener("click",async()=>{
+  const ups=Object.keys(FORMS).map(k=>({form_type:k,person_id:$("h-"+k).value}));
+  const {error}=await supa.from("handlers").upsert(ups);
+  if(!error){$("handlermsg").hidden=false;setTimeout(()=>$("handlermsg").hidden=true,2500);}
+  await loadAll();
+});
+$("nr-add").addEventListener("click",async()=>{
+  const name=$("nr-name").value.trim();if(!name)return;
+  const exp=$("nr-exp").value||new Date(Date.now()+365*86400000).toISOString().slice(0,10);
+  await supa.from("register").upsert({id:regSlug(name),name,type:$("nr-type").value,status:"approved",approved_on:todayStr(),expires_on:exp});
+  $("nr-name").value="";await loadAll();
+});
+$("np-add").addEventListener("click",async()=>{
+  const name=$("np-name").value.trim(),email=$("np-email").value.trim().toLowerCase();
+  if(!name||!email)return;
+  const id=email.split("@")[0].replace(/[^a-z0-9_.+-]/g,"");
+  await supa.from("people").insert({id,name,email,manager_id:$("np-mgr").value||null,role:"staff"});
+  $("np-name").value="";$("np-email").value="";await loadAll();
+});
+document.addEventListener("click",async e=>{
+  const rs=e.target.closest("[data-rsave]");
+  if(rs){const id=rs.dataset.rsave;
+    await supa.from("register").update({name:$("rg-name-"+id).value.trim(),type:$("rg-type-"+id).value,
+      status:$("rg-status-"+id).value,approved_on:$("rg-app-"+id).value||null,expires_on:$("rg-exp-"+id).value||null,
+      updated_at:new Date().toISOString()}).eq("id",id);
+    rs.textContent="Saved";setTimeout(()=>rs.textContent="Save",1500);await loadAll();return;}
+  const rd=e.target.closest("[data-rdel]");
+  if(rd){if(rd.dataset.c!=="1"){rd.dataset.c="1";rd.textContent="Really?";setTimeout(()=>{rd.dataset.c="";rd.textContent="Remove";},3000);return;}
+    await supa.from("register").delete().eq("id",rd.dataset.rdel);await loadAll();return;}
+  const sv=e.target.closest("[data-psave]");
+  if(sv){const id=sv.dataset.psave;
+    await supa.from("people").update({name:$("sp-name-"+id).value.trim(),title:$("sp-title-"+id).value.trim()||null,
+      email:$("sp-email-"+id).value.trim().toLowerCase(),extension:$("sp-ext-"+id).value.trim()||null,
+      mobile:$("sp-mob-"+id).value.trim()||null,manager_id:$("sp-mgr-"+id).value||null,
+      role:$("sp-role-"+id).value,active:$("sp-act-"+id).value==="true"}).eq("id",id);
+    sv.textContent="Saved";setTimeout(()=>sv.textContent="Save",1500);await loadAll();return;}
+});
+</script>
+</body>
+</html>

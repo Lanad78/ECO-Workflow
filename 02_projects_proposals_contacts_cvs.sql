@@ -1,0 +1,3 @@
+-- See Supabase project migration "projects_proposals_contacts_cvs" (applied 2026-10-07).
+-- Tables: projects, proposals, contacts, cvs with RLS: staff read/add, ops/PM/lead/creator edit, ops delete.
+-- Full SQL is recorded in the Supabase migration history (Dashboard -> Database -> Migrations).

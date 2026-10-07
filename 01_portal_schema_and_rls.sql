@@ -1,0 +1,7 @@
+-- See Supabase project migration "portal_schema_and_rls" (applied 2026-10-07).
+-- Tables: people, handlers, register, requests, request_events, ref_counters
+-- Functions: current_person_id(), is_ops(), next_ref(prefix, form_type)
+-- RLS: people/handlers/register readable by active staff, writable by ops;
+-- requests: insert self, select non-confidential staff-wide else submitter/manager/ops,
+-- update by ops or manager while pending_manager; events: visible with parent, insert as self.
+-- Full SQL is recorded in the Supabase migration history (Dashboard -> Database -> Migrations).
