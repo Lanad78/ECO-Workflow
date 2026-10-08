@@ -129,7 +129,6 @@ footer.note{margin-top:34px;color:var(--muted);font-size:12px;border-top:1px sol
     <div class="whoami"><span id="who"></span><span class="rolebadge" id="role" hidden>Finance &amp; Operations</span>
       <button class="btn small" id="signout" hidden>Sign out</button></div>
   </header>
-
   <!-- SIGN IN -->
   <div class="panel signin" id="signinbox" hidden>
     <h2>Sign in</h2>
@@ -301,42 +300,18 @@ const FORMS={
       {k:"contractRef",l:"Contract ref. & date"},{k:"deliverable",l:"Deliverable(s) covered",full:1},
       {k:"milestone",l:"Payment milestone no."},{k:"invoiceNo",l:"Invoice no. & date"},
       {k:"amount",l:"Amount requested (JOD)",t:"number",req:1},{k:"cumulative",l:"Cumulative paid incl. this (JOD)",t:"number"}]},
-  micropurchase:{prefix:"Micro_Purchase",title:"Micro purchase request",
-    route:"Line manager → <b>procurement</b>. Budget verification → Finance & Admin Manager → Department Head.",
-    hint:"Up to 100 JOD petty cash; above 100 JOD by cheque or bank transfer (QF-PU-01-06).",
-    fields:[{k:"project",l:"Project name / site",req:1},
-      {k:"paymentMethod",l:"Payment method",t:"select",opts:["Petty cash (≤ 100 JOD)","Cheque","Bank transfer"]},
-      {k:"notes",l:"Notes",t:"textarea",full:1}],
-    items:{label:"Items",cols:[["item","Items"],["qty","Quantity"],["unit","Price per unit (JOD)"],["vendor","Vendor name & information"],["notes","Notes"]]}},
-  transport:{prefix:"Transportation",title:"Transportation request",
-    route:"Line manager → <b>admin</b> assigns ECO vehicle & driver or arranges car rental.",
-    fields:[{k:"project",l:"Project name & code",req:1},{k:"purpose",l:"Purpose",req:1},{k:"route",l:"Route",req:1},
-      {k:"date",l:"Date / day",t:"date",req:1},{k:"timeFrom",l:"From (time)"},{k:"timeTo",l:"To (time)"},{k:"passengers",l:"Passengers",t:"number"}]},
-  travel:{prefix:"Travel",title:"Travel request",
-    route:"Line manager → <b>admin</b> completes booking (flights, hotel, per-diem, car rental).",
-    fields:[{k:"traveler",l:"Traveler name",req:1},{k:"assignment",l:"Assignment",req:1},{k:"project",l:"Project name & code",req:1},
-      {k:"route",l:"Route / destination",req:1},{k:"from",l:"Travel duration — from",t:"date",req:1},{k:"to",l:"Travel duration — to",t:"date"}]},
+  evt:{prefix:"EVT",title:"Event & logistics request",custom:"evt",
+    route:"Line manager → <b>admin / operations</b>. Covers organizing an event, attending an event, and delivery / collection of items — in city, in the governorates, or abroad.",
+    hint:"Choose the request type first, then the location. Only the sections that apply will appear. Jordan per-diem meal rates: breakfast 10, lunch 20, dinner 20 JOD — each meal paid only when not provided. Personal-car mileage 0.25 JOD/km."},
+  procurement:{prefix:"PR",title:"Procurement request",custom:"proc",
+    route:"Line manager → <b>procurement</b>. The method follows the Procurement Procedure thresholds: up to 350 JOD micro purchase, over 350 to 50,000 competitive (3 offers), over 50,000 tender (public announcement & Tender Committee).",
+    hint:"Payment rule: below 100 JOD cash permitted; 100–350 JOD by cheque or bank transfer. Above 350 JOD third-party due diligence is required before award. Procurement obtains the offers — you don't need quotes to submit."},
   travelexp:{prefix:"Local_Travel",title:"Travel expenses report",
     route:"Line manager → <b>finance</b> records against the project. Attach receipts to the hard-copy file (QF-ADM-01-03).",
     fields:[{k:"traveler",l:"Name",req:1},{k:"assignment",l:"Travel assignment",req:1},{k:"project",l:"Client / project",req:1},
       {k:"travelReqNo",l:"Travel request no."},{k:"duration",l:"Duration & location"},{k:"days",l:"Days",t:"number"},
       {k:"currency",l:"Currency",t:"select",opts:["JOD","USD","AED","EUR"]}],
     items:{label:"Expense lines",cols:[["date","Date"],["desc","Item / description"],["paidBy","Paid by (ECO / Traveler)"],["method","Payment method"],["amount","Amount"]]}},
-  event:{prefix:"Event",title:"Event arrangement",
-    route:"Line manager → <b>admin</b> handles venue, logistics & procurement; Director approves (QF-ADM-01-05).",
-    fields:[{k:"eventType",l:"Type",t:"select",opts:["Workshop","Training","Conference","Meeting","Other"]},
-      {k:"project",l:"Project / proposal name & code",req:1},{k:"purpose",l:"Purpose",req:1,full:1},
-      {k:"dateFrom",l:"Event date — from",t:"date",req:1},{k:"dateTo",l:"Event date — to",t:"date"},
-      {k:"timeFrom",l:"Event time — from"},{k:"timeTo",l:"Event time — to"},{k:"location",l:"Location"},{k:"venueSpecs",l:"Venue specs"},
-      {k:"attendeesEco",l:"Attendees (ECO)",t:"number"},{k:"attendeesClients",l:"Attendees (clients)",t:"number"},{k:"attendeesInvitees",l:"Attendees (invitees)",t:"number"},
-      {k:"coffee",l:"Coffee break",t:"select",opts:["None","Once","Continuous"]},{k:"lunch",l:"Lunch",t:"select",opts:["No","Yes"]},
-      {k:"accommodation",l:"Accommodation",t:"select",opts:["No","Yes"]},
-      {k:"setup",l:"Venue setup",t:"select",opts:["Round table","Board table","Theatre","U-shape","Classroom","Other"]},
-      {k:"equipment",l:"Required equipment / services",t:"textarea",full:1}]},
-  eventexp:{prefix:"Event_Exp",title:"Event expenses",
-    route:"Line manager → <b>admin</b> reviews; finance records against the project (QF-ADM-01-06).",
-    fields:[{k:"eventName",l:"Event name",req:1},{k:"project",l:"Project number",req:1},{k:"location",l:"Location"},{k:"dates",l:"Date(s) & day(s)"}],
-    items:{label:"Event expenses",cols:[["item","Expense item"],["vendor","Vendor name"],["amount","Expenses in JOD"]]}},
   riskreport:{prefix:"QIR",title:"Issue, risk or improvement report",direct:1,
     route:"Direct to the <b>management representative</b> — feeds the SWOT / strategy and KPI reviews (ISO 9001).",
     fields:[{k:"category",l:"Category",t:"select",opts:["Quality","Environment","Health & safety","Client / interested party","Supplier","Process improvement","Other"]},
@@ -344,10 +319,11 @@ const FORMS={
       {k:"suggestion",l:"Suggested action",t:"textarea",full:1}]},
 };
 const GROUPS=[
+  ["Events & logistics",["evt"]],
+  ["Procurement",["procurement"]],
   ["Third parties & agreements",["duediligence","agreement"]],
   ["Invoicing & payments",["invoicerequest","payment"]],
-  ["Procurement & logistics",["micropurchase","transport","travel","travelexp"]],
-  ["Events",["event","eventexp"]],
+  ["Expenses",["travelexp"]],
   ["Quality & improvement (ISO 9001)",["riskreport"]],
 ];
 const STATUS={pending_manager:"Awaiting manager",submitted:"Submitted",in_review:"In review",approved:"Approved",completed:"Completed",rejected:"Rejected"};
@@ -449,6 +425,14 @@ function openForm(key){
   currentForm=key; const f=FORMS[key];
   $("chooser").hidden=true; $("formhost").hidden=false; $("sentbox").hidden=true; $("reqform").hidden=false;
   const mgr=(!f.direct&&me.manager_id)?personOf(me.manager_id):null;
+  if(f.custom){
+    $("reqform").innerHTML=`<h2>${esc(f.title)}</h2><div class="meta">${f.route}${mgr?` · Your approver: <b>${esc(mgr.name)}</b>`:""}</div>
+      ${f.hint?`<div class="notice">${esc(f.hint)}</div>`:""}
+      <div id="custombody"></div>
+      <div class="formfoot"><button class="btn primary" type="submit" id="submitbtn">Submit request</button><span class="err" id="formerr" hidden></span></div>`;
+    if(f.custom==="evt")initEvt(); else initProc();
+    return;
+  }
   let html=`<h2>${esc(f.title)}</h2><div class="meta">${f.route}${mgr?` · Your approver: <b>${esc(mgr.name)}</b>`:""}</div>
     ${f.hint?`<div class="notice">${esc(f.hint)}</div>`:""}
     <div class="fields">${f.fields.map(fieldHtml).join("")}</div>`;
@@ -477,16 +461,21 @@ $("reqform").addEventListener("submit",async e=>{
   e.preventDefault();
   const f=FORMS[currentForm]; const errEl=$("formerr"); errEl.hidden=true;
   const fail=m=>{errEl.textContent=m;errEl.hidden=false;};
-  const data={};
+  let data={},items=[];
+  if(f.custom){
+    const res=f.custom==="evt"?collectEvt():collectProc();
+    if(res.error)return fail(res.error);
+    data=res.data;items=res.items||[];
+  }else{
   for(const fl of f.fields){
     const v=$("fld-"+fl.k).value.trim();
     if(fl.req&&!v){$("fld-"+fl.k).focus();return fail("Please fill the required fields (*).");}
     if(v)data[fl.k]=v;
   }
-  let items=[];
   if(f.items)for(const tr of $("itembody").children){const row={};let any=false;
     tr.querySelectorAll("input").forEach(inp=>{const v=inp.value.trim();if(v){row[inp.dataset.col]=v;any=true;}});
     if(any)items.push(row);}
+  }
   const regKey=currentForm==="payment"?"consultant":(currentForm==="agreement"?"counterparty":null);
   if(regKey){
     const otherKey=regKey+"Other";
@@ -530,9 +519,431 @@ $("reqform").addEventListener("submit",async e=>{
   btn.disabled=false;
 });
 
+/* ====== EVENT & LOGISTICS MODULE (per ECO Event Workflow Form Specification) ====== */
+const GOVS=["Amman","Irbid","Zarqa","Balqa","Madaba","Mafraq","Jerash","Ajloun","Karak","Tafilah","Ma'an","Aqaba"];
+const MEAL_RATES={Breakfast:10,Lunch:20,Dinner:20};
+const L=(id,label,inner,full)=>`<label class="f ${full?"full":""}" id="w-${id}">${label}${inner}</label>`;
+const Ltxt=(id,label,req,full,ph)=>L(id,label+(req?" *":""),`<input id="${id}" type="text" ${ph?`placeholder="${esc(ph)}"`:""}>`,full);
+const Lnum=(id,label,req,full)=>L(id,label+(req?" *":""),`<input id="${id}" type="number" min="0" step="any">`,full);
+const Ldate=(id,label,req,t)=>L(id,label+(req?" *":""),`<input id="${id}" type="${t||"date"}">`);
+const Lsel=(id,label,opts,req,blank=true)=>L(id,label+(req?" *":""),`<select id="${id}">${blank?'<option value=""></option>':""}${opts.map(o=>`<option>${esc(o)}</option>`).join("")}</select>`);
+const Larea=(id,label,req)=>L(id,label+(req?" *":""),`<textarea id="${id}"></textarea>`,1);
+const Lchk=(id,label)=>`<label class="f" id="w-${id}" style="flex-direction:row;align-items:center;gap:8px"><input id="${id}" type="checkbox" style="width:auto">${label}</label>`;
+const sect=(id,title,inner)=>`<div id="sec-${id}" class="items" style="margin-top:18px"><h3>${title}</h3><div class="fields">${inner}</div></div>`;
+const V=id=>{const e=$(id);return e?(e.type==="checkbox"?e.checked:e.value.trim()):"";};
+const projOptions=()=>projects.filter(p=>p.status==="ongoing").map(p=>(p.code?p.code+" — ":"")+p.name);
+const EQUIP=[["flip_charts","Flip charts with markers"],["lobby_sign","Lobby sign"],["projectors","LCD projectors"],["recorder","Recorder"],["sound_system","Sound system"],["laptops","Laptops"],["registration_table","Registration table"],["camera","Camera"],["podium_microphone","Podium with microphone"],["extra_microphones","Additional microphones"]];
+function rowTable(id,cols,addLabel){
+  return `<div class="full"><div class="itemswrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c[1])}</th>`).join("")}</tr></thead>
+    <tbody id="${id}"></tbody></table></div>
+    <button type="button" class="btn small" data-addrow="${id}" data-cols='${JSON.stringify(cols.map(c=>c))}'>+ ${addLabel}</button></div>`;
+}
+function rowHtml2(cols){
+  return `<tr>${cols.map(c=>`<td>${c[2]==="sel"?`<select data-col="${c[0]}"><option value=""></option>${c[3].map(o=>`<option>${esc(o)}</option>`).join("")}</select>`
+    :c[2]==="chks"?c[3].map(o=>`<label style="font-size:11px;margin-right:6px;white-space:nowrap"><input type="checkbox" data-col="${c[0]}" value="${esc(o)}" style="width:auto">${esc(o)}</label>`).join("")
+    :`<input data-col="${c[0]}" type="${c[2]||"text"}" ${c[2]==="number"?'min="0" step="any"':""}>`}</td>`).join("")}</tr>`;
+}
+const ROWDEFS={
+  meals:[["date","Date","date"],["eligible","Eligible meals","chks",["Breakfast","Lunch","Dinner"]],["provided","Meals provided","chks",["Breakfast","Lunch","Dinner","None"]],["details","Provider / details"]],
+  costs:[["category","Category"],["amount","Amount","number"],["currency","Currency","sel",["JOD","USD","EUR","AED"]],["description","Description"]],
+  parts:[["full_name","Full name"],["category","Category","sel",["ECO","Client","Invitee"]],["organization","Organization"],["job_title","Job title"],["email","Email","email"],["phone","Phone"]],
+  stops:[["kind","Deliver / Pickup","sel",["Deliver","Pickup"]],["city","City / locality"],["address","Address"],["contact","Contact name"],["phone","Phone"]],
+  lines:[["description","Description / specifications"],["unit","Unit"],["qty","Quantity","number"],["unit_price","Est. unit price","number"],["supplier","Recommended supplier (optional)"]],
+};
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-addrow]");
+  if(b){const tb=$(b.dataset.addrow);if(tb&&tb.children.length<30)tb.insertAdjacentHTML("beforeend",rowHtml2(ROWDEFS[tb.dataset.def]));evtRecalc();procRecalc();}
+});
+function readRows(id){
+  const tb=$(id);if(!tb)return [];
+  const out=[];
+  for(const tr of tb.children){
+    const row={};let any=false;
+    tr.querySelectorAll("[data-col]").forEach(el=>{
+      if(el.type==="checkbox"){if(el.checked){row[el.dataset.col]=(row[el.dataset.col]||[]);row[el.dataset.col].push(el.value);any=true;}}
+      else{const v=el.value.trim();if(v){row[el.dataset.col]=v;any=true;}}
+    });
+    if(any)out.push(row);
+  }
+  return out;
+}
+function addRows(id,def,n){const tb=$(id);tb.dataset.def=def;for(let i=0;i<n;i++)tb.insertAdjacentHTML("beforeend",rowHtml2(ROWDEFS[def]));}
+
+function initEvt(){
+  $("custombody").innerHTML=
+    sect("req","Request",
+      Lsel("e_type","Request type",["ARRANGEMENT — Organize an Event","PARTICIPATION — Attend an Event","DELIVERY_PICKUP — Deliver / Collect Items"],1)+
+      Lsel("e_scope","Location category",["CITY — In city (Amman)","GOVERNORATE — Outside city, within Jordan","ABROAD — Abroad"],1)+
+      L("e_project","Project / cost centre *",`<input id="e_project" list="projlist"><datalist id="projlist">${projOptions().map(p=>`<option>${esc(p)}</option>`).join("")}</datalist>`)+
+      Larea("e_purpose","Purpose / expected outcome",1))+
+    sect("loc","Location",
+      Lsel("e_gov","Governorate",GOVS,1)+
+      Ltxt("e_country","Country",1,0,"")+
+      Ltxt("e_city","Destination city / locality",1))+
+    sect("event","Event information",
+      Ltxt("e_name","Event name",1)+
+      Lsel("e_kind","Event type",["Meeting","Workshop","Training","Conference","Seminar","Forum","Field visit","Site inspection","Retreat","Other"],1)+
+      Ltxt("e_kind_other","Other event type",0)+
+      Ltxt("e_organizer","Organizer / host",1)+
+      Ldate("e_start","Event start",1,"datetime-local")+Ldate("e_end","Event end",1,"datetime-local")+
+      Ltxt("e_venue","Venue name / preference")+Ltxt("e_venue_addr","Venue address / area")+Ltxt("e_contact","Organizer / venue contact"))+
+    sect("att","Attendees",
+      Lnum("e_att_eco","Attendees — ECO",1)+Lnum("e_att_cli","Attendees — Clients",1)+Lnum("e_att_inv","Attendees — Invitees",1)+
+      L("e_att_total","Total attendees",`<input id="e_att_total" readonly>`))+
+    sect("cat","Catering",
+      Lsel("e_coffee","Coffee breaks",["None","Once","Twice","Continuous"],1)+
+      Lsel("e_lunch","Lunch required",["Yes","No"],1)+
+      Larea("e_cat_details","Catering / dietary requirements"))+
+    sect("acc","Accommodation",
+      `<div class="full mailnote" id="acc_note"></div>`+
+      Lsel("e_acc","Accommodation required",["Yes","No"],1)+
+      Lnum("e_acc_guests","Guests requiring accommodation",1)+
+      Lnum("e_rooms_single","Single rooms")+Lnum("e_rooms_twin","Twin rooms")+
+      Ldate("e_checkin","Check-in",1)+Ldate("e_checkout","Check-out",1)+
+      L("e_nights","Nights",`<input id="e_nights" readonly>`)+
+      L("e_hotel_meals","Meals included in accommodation",["Breakfast","Lunch","Dinner","None"].map(m=>`<label style="font-size:12px;margin-right:8px"><input type="checkbox" class="hm" value="${m}" style="width:auto"> ${m}</label>`).join(""),1)+
+      Larea("e_acc_details","Accommodation details (hotel preference, guest names)"))+
+    sect("venue","Venue setup",
+      Lsel("e_setup","Venue setup",["Round tables","U-shape","Boardroom table","Rows of chairs","Other"],1)+
+      Ltxt("e_setup_other","Other venue setup"))+
+    sect("equip","Equipment & services",
+      EQUIP.map(([k,l])=>`<label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" class="eq" data-k="${k}" style="width:auto"><span style="flex:1">${l}</span><input type="number" class="eqq" data-k="${k}" min="1" placeholder="qty" style="width:70px"></label>`).join("")+
+      Lchk("e_eq_other","Other equipment / services")+Larea("e_eq_other_details","Other equipment details"))+
+    sect("lang","Language services",
+      Lsel("e_interp","Interpretation required",["Yes","No"],1)+
+      L("e_interp_types","Interpretation type",["Consecutive","Whispered","Sign language","Simultaneous"].map(t=>`<label style="font-size:12px;margin-right:8px"><input type="checkbox" class="it" value="${t}" style="width:auto"> ${t}</label>`).join(""),1)+
+      Ltxt("e_interp_langs","Interpretation languages (source → target)")+
+      Lnum("e_headsets","Simultaneous headsets")+
+      Lsel("e_transl","Written translation required",["Yes","No"],1)+
+      Larea("e_transl_details","Translation details (languages, materials, pages)"))+
+    sect("mat","Materials & communication",
+      Lchk("e_print","Printed materials required")+Larea("e_print_details","Printing details (item, copies, pages, colour, size)")+
+      Larea("e_comm","Communication requirements (signage, invitations)"))+
+    sect("trans","Transportation",
+      Lsel("e_tmode","Main transportation mode",[],1)+
+      Larea("e_tdetails","Route / transport details")+
+      Lnum("e_km","Total personal-car kilometres")+
+      L("e_mileage","Mileage reimbursement (JOD @ 0.25/km)",`<input id="e_mileage" readonly>`)+
+      Ldate("e_dep","Travel departure",0,"datetime-local")+Ldate("e_ret","Travel return",0,"datetime-local")+
+      Lsel("e_localt","Local transportation during travel",["Yes","No"],1)+
+      Larea("e_localt_details","Local transportation details"))+
+    sect("pd","Per diem",
+      Lsel("e_pd","Per diem requested",["Yes","No"],1)+
+      `<div class="full mailnote" id="pd_note">Jordan rates: breakfast 10, lunch 20, dinner 20 JOD. A meal is paid only when eligible and not provided by hotel, event, host or company.</div>`+
+      rowTable("pd_rows",ROWDEFS.meals,"Add day")+
+      L("e_pd_total","Estimated per diem total (JOD)",`<input id="e_pd_total" readonly>`))+
+    sect("abroad","Overseas services",
+      L("e_intl","Additional overseas services",["Visa","Roaming","Travel insurance"].map(s=>`<label style="font-size:12px;margin-right:8px"><input type="checkbox" class="is" value="${s}" style="width:auto"> ${s}</label>`).join(""),1)+
+      Larea("e_intl_details","Overseas service details"))+
+    sect("fees","Registration fees",
+      Lsel("e_reg","Registration fee required",["Yes","No"],1)+
+      Lnum("e_reg_amount","Registration fee amount")+
+      Lsel("e_reg_cur","Currency",["JOD","USD","EUR","AED"],0))+
+    sect("budget","Other estimated costs",rowTable("cost_rows",ROWDEFS.costs,"Add cost line"))+
+    sect("del","Delivery / pickup",
+      Lsel("e_daction","Action required",["Deliver","Pickup","Deliver and pickup"],1)+
+      Lsel("e_dmode","Fulfilment method",["Company driver / staff","External courier / shipping","Other"],1)+
+      Larea("e_ditems","Items / documents to deliver or collect",1)+
+      Lnum("e_dqty","Number of items / packages",1)+
+      Larea("e_dhandling","Special handling instructions")+
+      Ldate("e_dwhen","Required delivery / pickup date & time",1,"datetime-local")+
+      `<div class="full"><b style="font-size:12.5px">Stops — add every collection and delivery location in route order (at least origin and destination)</b></div>`+
+      rowTable("stop_rows",ROWDEFS.stops,"Add stop")+
+      Lsel("e_dreturn","Return items / signed acknowledgment required",["Yes","No"],1)+
+      Larea("e_dreturn_details","Return collection details")+
+      Lnum("e_dweight","Estimated shipment weight (kg)")+
+      Ltxt("e_ddims","Package dimensions (L × W × H cm)")+
+      Ltxt("e_dvalue","Declared shipment value & currency"))+
+    sect("agenda","Agenda",
+      Lsel("e_agenda","Agenda status",["Draft available","Final available","To be prepared"],1)+
+      Ltxt("e_agenda_file","Agenda file location (server path / link)")+
+      Larea("e_agenda_notes","Agenda preparation instructions (topics, sessions, speakers, timings)"))+
+    sect("parts","Participants",
+      Lsel("e_plist","Participant list status",["Complete","Partial","To be confirmed"],1)+
+      rowTable("part_rows",ROWDEFS.parts,"Add participant"))+
+    sect("inv","Invitation letters",
+      Lsel("e_invreq","Invitation letters required",["Yes","No"],1)+
+      Ltxt("e_inv_recipients","Recipients (names from the participant list)")+
+      Lsel("e_inv_lang","Letter language",["Arabic","English","Bilingual Arabic/English","Other"],0)+
+      L("e_inv_format","Format",["Electronic PDF","Printed letter"].map(x=>`<label style="font-size:12px;margin-right:8px"><input type="checkbox" class="invf" value="${x}" style="width:auto"> ${x}</label>`).join(""),1)+
+      Ldate("e_inv_due","Preparation deadline")+
+      Larea("e_inv_details","Wording / signatory details"))+
+    sect("cert","Certificates",
+      Lsel("e_certreq","Completion certificates required",["Yes","No"],1)+
+      Ltxt("e_cert_recipients","Proposed recipients")+
+      Lsel("e_cert_type","Certificate type",["Attendance","Completion","Other"],0)+
+      Lsel("e_cert_lang","Language",["Arabic","English","Bilingual Arabic/English","Other"],0)+
+      L("e_cert_format","Format",["Electronic PDF","Printed certificate"].map(x=>`<label style="font-size:12px;margin-right:8px"><input type="checkbox" class="certf" value="${x}" style="width:auto"> ${x}</label>`).join(""),1)+
+      Ldate("e_cert_due","Delivery deadline")+
+      Larea("e_cert_details","Wording / completion criteria"))+
+    sect("sub","Submission",
+      Larea("e_notes","Additional notes")+
+      Lchk("e_decl","I confirm the request details are accurate *"));
+  addRows("pd_rows","meals",1);addRows("cost_rows","costs",2);addRows("part_rows","parts",3);addRows("stop_rows","stops",2);
+  $("custombody").addEventListener("input",evtRecalc);
+  $("custombody").addEventListener("change",evtRecalc);
+  evtRecalc();
+}
+function evtState(){
+  const t=(V("e_type")||"").split(" ")[0], s=(V("e_scope")||"").split(" ")[0];
+  const isEvent=t==="ARRANGEMENT"||t==="PARTICIPATION", isArr=t==="ARRANGEMENT", isDel=t==="DELIVERY_PICKUP";
+  const away=s==="GOVERNORATE"||s==="ABROAD", abroad=s==="ABROAD";
+  return {t,s,isEvent,isArr,isDel,away,abroad};
+}
+function evtRecalc(){
+  if(currentForm!=="evt"||!$("sec-req"))return;
+  const st=evtState();
+  const show=(id,on)=>{const el=$("sec-"+id);if(el)el.hidden=!on;};
+  show("loc",!!st.t&&!!st.s);show("event",st.isEvent);show("att",st.isArr);show("cat",st.isArr);
+  const multiDay=(V("e_start")||"").slice(0,10)!==(V("e_end")||"").slice(0,10)&&V("e_start")&&V("e_end");
+  const accEligible=st.isEvent&&st.away&&(st.abroad||multiDay);
+  show("acc",accEligible);
+  if($("acc_note"))$("acc_note").textContent=st.s==="GOVERNORATE"?"Within Jordan, accommodation applies to events spanning more than one day.":"";
+  const accYes=accEligible&&V("e_acc")==="Yes";
+  ["e_acc_guests","e_rooms_single","e_rooms_twin","e_checkin","e_checkout","e_nights","e_hotel_meals","e_acc_details"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!accYes;});
+  show("venue",st.isArr);show("equip",st.isArr);show("lang",st.isArr);show("mat",st.isArr);
+  show("trans",!!st.t&&!!st.s);show("pd",st.isEvent&&st.away);show("abroad",st.isEvent&&st.abroad);
+  show("fees",st.t==="PARTICIPATION");show("budget",!!st.t);show("del",st.isDel);
+  show("agenda",st.isArr);show("parts",st.isArr);show("inv",st.isArr);show("cert",st.isArr);show("sub",!!st.t&&!!st.s);
+  const wgov=$("w-e_gov");if(wgov)wgov.hidden=st.abroad;
+  const ctry=$("e_country");if(ctry&&!st.abroad){ctry.value="Jordan";ctry.readOnly=true;}else if(ctry){if(ctry.value==="Jordan")ctry.value="";ctry.readOnly=false;}
+  const city=$("e_city");if(city&&st.s==="CITY"){city.value="Amman";city.readOnly=true;}else if(city){if(city.value==="Amman"&&st.s!=="CITY")city.value="";city.readOnly=false;}
+  const tot=(parseInt(V("e_att_eco"))||0)+(parseInt(V("e_att_cli"))||0)+(parseInt(V("e_att_inv"))||0);
+  if($("e_att_total"))$("e_att_total").value=tot;
+  const ko=$("w-e_kind_other");if(ko)ko.hidden=V("e_kind")!=="Other";
+  const so=$("w-e_setup_other");if(so)so.hidden=V("e_setup")!=="Other";
+  const eo=$("w-e_eq_other_details");if(eo)eo.hidden=!V("e_eq_other");
+  const pi=$("w-e_print_details");if(pi)pi.hidden=!V("e_print");
+  const modeSel=$("e_tmode");
+  if(modeSel){
+    const cur=modeSel.value;
+    let opts=["No transport needed","Company vehicle","Personal car","Taxi / ride service","Hired bus / vehicle","Other"];
+    if(st.abroad&&st.isEvent)opts.splice(5,0,"Air travel");
+    if(st.isDel)opts.splice(5,0,"Courier / shipping service");
+    modeSel.innerHTML='<option value=""></option>'+opts.map(o=>`<option ${o===cur?"selected":""}>${o}</option>`).join("");
+  }
+  const km=$("w-e_km"),mi=$("w-e_mileage");
+  const isCar=V("e_tmode")==="Personal car";
+  if(km)km.hidden=!isCar;if(mi)mi.hidden=!isCar;
+  if($("e_mileage"))$("e_mileage").value=isCar?((parseFloat(V("e_km"))||0)*0.25).toFixed(2):"";
+  const td=$("w-e_tdetails");if(td)td.hidden=!V("e_tmode")||V("e_tmode")==="No transport needed";
+  ["e_dep","e_ret","e_localt"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!(st.isEvent&&st.away);});
+  const lt=$("w-e_localt_details");if(lt)lt.hidden=V("e_localt")!=="Yes";
+  const it=["e_interp_types","e_interp_langs"].map(id=>$("w-"+id));
+  const interpYes=V("e_interp")==="Yes";
+  it.forEach(w=>{if(w)w.hidden=!interpYes;});
+  const simu=[...document.querySelectorAll(".it:checked")].some(c=>c.value==="Simultaneous");
+  const hw=$("w-e_headsets");if(hw)hw.hidden=!(interpYes&&simu);
+  const tw=$("w-e_transl_details");if(tw)tw.hidden=V("e_transl")!=="Yes";
+  const pdYes=V("e_pd")==="Yes";
+  const pdt=$("pd_rows");if(pdt)pdt.closest("div.full").hidden=!pdYes;
+  if($("w-e_pd_total"))$("w-e_pd_total").hidden=!pdYes||st.abroad;
+  if($("pd_note"))$("pd_note").textContent=st.abroad?"Overseas per diem uses approved destination-specific rates set by Finance — list the days; the total is not auto-calculated in JOD.":"Jordan rates: breakfast 10, lunch 20, dinner 20 JOD. A meal is paid only when eligible and not provided by hotel, event, host or company.";
+  let pdTotal=0;
+  readRows("pd_rows").forEach(r=>{(r.eligible||[]).forEach(m=>{if(!((r.provided||[]).includes(m)))pdTotal+=MEAL_RATES[m]||0;});});
+  if($("e_pd_total"))$("e_pd_total").value=pdYes&&!st.abroad?pdTotal.toFixed(2):"";
+  const iw=$("w-e_intl_details");if(iw)iw.hidden=![...document.querySelectorAll(".is:checked")].length;
+  const regYes=V("e_reg")==="Yes";
+  ["e_reg_amount","e_reg_cur"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!regYes;});
+  const agSt=V("e_agenda");
+  const af=$("w-e_agenda_file");if(af)af.hidden=!(agSt==="Draft available"||agSt==="Final available");
+  const an=$("w-e_agenda_notes");if(an)an.hidden=agSt!=="To be prepared";
+  const pl=V("e_plist");
+  const pr=$("part_rows");if(pr)pr.closest("div.full").hidden=!(pl==="Complete"||pl==="Partial");
+  const invYes=V("e_invreq")==="Yes";
+  ["e_inv_recipients","e_inv_lang","e_inv_format","e_inv_due","e_inv_details"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!invYes;});
+  const certYes=V("e_certreq")==="Yes";
+  ["e_cert_recipients","e_cert_type","e_cert_lang","e_cert_format","e_cert_due","e_cert_details"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!certYes;});
+  const dr=$("w-e_dreturn_details");if(dr)dr.hidden=V("e_dreturn")!=="Yes";
+  const courier=V("e_dmode")==="External courier / shipping";
+  const ww=$("w-e_dweight");if(ww)ww.hidden=!courier;
+  const dw=$("w-e_ddims");if(dw)dw.hidden=!courier;
+  const dv=$("w-e_dvalue");if(dv)dv.hidden=!(courier&&st.abroad);
+}
+function collectEvt(){
+  const st=evtState();
+  if(!st.t)return{error:"Choose the request type."};
+  if(!st.s)return{error:"Choose the location category."};
+  const req=(id,label)=>{const w=$("w-"+id);if(w&&w.hidden)return null;if(!V(id))return label;return null;};
+  const must=[["e_project","Project / cost centre"],["e_purpose","Purpose"],["e_city","Destination city"]];
+  if(!st.abroad)must.push(["e_gov","Governorate"]);else must.push(["e_country","Country"]);
+  if(st.isEvent)must.push(["e_name","Event name"],["e_kind","Event type"],["e_organizer","Organizer"],["e_start","Event start"],["e_end","Event end"]);
+  if(st.isArr)must.push(["e_att_eco","Attendees — ECO"],["e_att_cli","Attendees — Clients"],["e_att_inv","Attendees — Invitees"],
+    ["e_coffee","Coffee breaks"],["e_lunch","Lunch required"],["e_setup","Venue setup"],["e_interp","Interpretation required"],
+    ["e_transl","Written translation required"],["e_agenda","Agenda status"],["e_plist","Participant list status"],
+    ["e_invreq","Invitation letters required"],["e_certreq","Certificates required"]);
+  must.push(["e_tmode","Transportation mode"]);
+  if(st.isEvent&&st.away)must.push(["e_localt","Local transportation"],["e_pd","Per diem requested"]);
+  if(st.t==="PARTICIPATION")must.push(["e_reg","Registration fee required"]);
+  if(st.isDel)must.push(["e_daction","Action required"],["e_dmode","Fulfilment method"],["e_ditems","Items / documents"],["e_dqty","Number of items"],["e_dwhen","Required date & time"],["e_dreturn","Return required"]);
+  const accVisible=!$("sec-acc").hidden;
+  if(accVisible)must.push(["e_acc","Accommodation required"]);
+  for(const [id,label] of must){const miss=req(id,label);if(miss)return{error:"Please complete: "+miss+"."};}
+  if(st.isEvent&&V("e_end")<=V("e_start"))return{error:"Event end must be after the start."};
+  if(st.isArr&&parseInt($("e_att_total").value)<=0)return{error:"Total attendees must be greater than 0."};
+  if(V("e_kind")==="Other"&&!V("e_kind_other"))return{error:"Describe the other event type."};
+  if(accVisible&&V("e_acc")==="Yes"){
+    if(!(parseInt(V("e_acc_guests"))>0))return{error:"Enter the number of guests requiring accommodation."};
+    if(((parseInt(V("e_rooms_single"))||0)+(parseInt(V("e_rooms_twin"))||0))<=0)return{error:"Total rooms must be greater than 0."};
+    if(!V("e_checkin")||!V("e_checkout")||V("e_checkout")<=V("e_checkin"))return{error:"Check-out must be later than check-in."};
+  }
+  if(V("e_tmode")&&V("e_tmode")!=="No transport needed"&&!V("e_tdetails"))return{error:"Enter the route / transport details."};
+  if(V("e_tmode")==="Personal car"&&!(parseFloat(V("e_km"))>0))return{error:"Enter the personal-car kilometres."};
+  if(st.isDel){
+    const stops=readRows("stop_rows");
+    if(stops.length<2)return{error:"Add at least the origin and destination stops."};
+    for(const s of stops)if(!s.kind||!s.city||!s.address||!s.contact||!s.phone)return{error:"Each stop needs action, city, address, contact and phone."};
+    if(V("e_dreturn")==="Yes"&&!V("e_dreturn_details"))return{error:"Describe the return collection."};
+    if(V("e_dmode")==="External courier / shipping"&&!(parseFloat(V("e_dweight"))>0))return{error:"Enter the estimated shipment weight."};
+    if(!(parseInt(V("e_dqty"))>0))return{error:"Number of items must be greater than 0."};
+  }
+  if(V("e_interp")==="Yes"&&![...document.querySelectorAll(".it:checked")].length)return{error:"Select at least one interpretation type."};
+  if(!$("w-e_headsets").hidden&&!(parseInt(V("e_headsets"))>0))return{error:"Enter the number of simultaneous headsets."};
+  if(V("e_invreq")==="Yes"&&![...document.querySelectorAll(".invf:checked")].length)return{error:"Choose the invitation format."};
+  if(V("e_certreq")==="Yes"&&![...document.querySelectorAll(".certf:checked")].length)return{error:"Choose the certificate format."};
+  if(V("e_reg")==="Yes"&&!(parseFloat(V("e_reg_amount"))>=0&&V("e_reg_cur")))return{error:"Enter the registration fee amount and currency."};
+  if(!V("e_decl"))return{error:"Tick the declaration to confirm the request details."};
+  const data={request_type:st.t,location_scope:st.s,project:V("e_project"),purpose:V("e_purpose"),
+    country:st.abroad?V("e_country"):"Jordan",governorate:st.abroad?"":V("e_gov"),city:V("e_city")};
+  const put=(k,id)=>{const w=$("w-"+id);if(w&&w.hidden)return;const v=V(id);if(v!==""&&v!==false)data[k]=v===true?"Yes":v;};
+  const sec=id=>!$("sec-"+id).hidden;
+  if(sec("event")){put("event_name","e_name");put("event_kind","e_kind");put("event_kind_other","e_kind_other");put("organizer","e_organizer");
+    put("start_at","e_start");put("end_at","e_end");put("venue_name","e_venue");put("venue_address","e_venue_addr");put("contact_details","e_contact");}
+  if(sec("att")){data.attendees_eco=V("e_att_eco");data.attendees_clients=V("e_att_cli");data.attendees_invitees=V("e_att_inv");data.attendees_total=$("e_att_total").value;}
+  if(sec("cat")){put("coffee_break","e_coffee");put("lunch_required","e_lunch");put("catering_details","e_cat_details");}
+  if(sec("acc")){put("accommodation_required","e_acc");
+    if(V("e_acc")==="Yes"){put("accommodation_guests","e_acc_guests");put("rooms_single","e_rooms_single");put("rooms_twin","e_rooms_twin");
+      put("check_in","e_checkin");put("check_out","e_checkout");data.nights=$("e_nights").value;
+      const hm=[...document.querySelectorAll(".hm:checked")].map(c=>c.value);if(hm.length)data.hotel_meals=hm.join(", ");
+      put("accommodation_details","e_acc_details");}}
+  if(sec("venue")){put("venue_setup","e_setup");put("venue_setup_other","e_setup_other");}
+  if(sec("equip")){
+    const eq={};document.querySelectorAll(".eq:checked").forEach(c=>{const q=document.querySelector(`.eqq[data-k="${c.dataset.k}"]`).value;eq[c.dataset.k]=parseInt(q)||1;});
+    if(Object.keys(eq).length)data.equipment=eq;
+    if(V("e_eq_other"))data.equipment_other=V("e_eq_other_details")||"Yes";}
+  if(sec("lang")){put("interpretation_required","e_interp");
+    if(V("e_interp")==="Yes"){data.interpretation_types=[...document.querySelectorAll(".it:checked")].map(c=>c.value).join(", ");put("interpretation_languages","e_interp_langs");put("headsets","e_headsets");}
+    put("translation_required","e_transl");put("translation_details","e_transl_details");}
+  if(sec("mat")){if(V("e_print"))data.printed_materials=V("e_print_details")||"Yes";put("communication_details","e_comm");}
+  put("transport_mode","e_tmode");put("transport_details","e_tdetails");
+  if(V("e_tmode")==="Personal car"){data.mileage_km=V("e_km");data.mileage_jod=$("e_mileage").value;}
+  put("travel_departure_at","e_dep");put("travel_return_at","e_ret");put("local_transport","e_localt");put("local_transport_details","e_localt_details");
+  if(sec("pd")){put("per_diem_requested","e_pd");
+    if(V("e_pd")==="Yes"){data.meal_days=readRows("pd_rows");if(!st.abroad)data.per_diem_total_jod=$("e_pd_total").value;}}
+  if(sec("abroad")){const is=[...document.querySelectorAll(".is:checked")].map(c=>c.value);if(is.length){data.international_services=is.join(", ");put("international_details","e_intl_details");}}
+  if(sec("fees")){put("registration_required","e_reg");if(V("e_reg")==="Yes"){put("registration_amount","e_reg_amount");put("registration_currency","e_reg_cur");}}
+  const costs=readRows("cost_rows");if(costs.length)data.cost_lines=costs;
+  if(sec("del")){put("delivery_action","e_daction");put("fulfilment_mode","e_dmode");put("item_description","e_ditems");put("item_quantity","e_dqty");
+    put("handling_instructions","e_dhandling");put("required_at","e_dwhen");data.stops=readRows("stop_rows");
+    put("return_required","e_dreturn");put("return_details","e_dreturn_details");put("shipment_weight_kg","e_dweight");put("shipment_dimensions","e_ddims");put("declared_value","e_dvalue");}
+  if(sec("agenda")){put("agenda_status","e_agenda");put("agenda_file","e_agenda_file");put("agenda_notes","e_agenda_notes");}
+  if(sec("parts")){put("participant_list_status","e_plist");const pp=readRows("part_rows");if(pp.length)data.participants=pp;}
+  if(sec("inv")){put("invitation_letters","e_invreq");
+    if(V("e_invreq")==="Yes"){put("invitation_recipients","e_inv_recipients");put("invitation_language","e_inv_lang");
+      data.invitation_format=[...document.querySelectorAll(".invf:checked")].map(c=>c.value).join(", ");put("invitation_due_date","e_inv_due");put("invitation_details","e_inv_details");}}
+  if(sec("cert")){put("certificates","e_certreq");
+    if(V("e_certreq")==="Yes"){put("certificate_recipients","e_cert_recipients");put("certificate_type","e_cert_type");put("certificate_language","e_cert_lang");
+      data.certificate_format=[...document.querySelectorAll(".certf:checked")].map(c=>c.value).join(", ");put("certificate_due_date","e_cert_due");put("certificate_details","e_cert_details");}}
+  put("additional_notes","e_notes");
+  return{data,items:[]};
+}
+
+/* ====== PROCUREMENT MODULE (per Procurement Procedure) ====== */
+function initProc(){
+  $("custombody").innerHTML=
+    sect("p1","Request",
+      L("p_project","Project / work package / cost centre *",`<input id="p_project" list="projlist2"><datalist id="projlist2">${projOptions().map(p=>`<option>${esc(p)}</option>`).join("")}</datalist>`)+
+      Ldate("p_required","Required-by date",1)+
+      Lsel("p_priority","Priority",["Normal","Urgent"],1)+
+      Larea("p_urgent_reason","Urgent — justification")+
+      Lsel("p_cat","What do you need to procure?",["Goods","Services"],1)+
+      Lsel("p_goods","Goods type",["Supplies","Assets"],1)+
+      Lchk("p_admin","Administrative purchase (corporate / admin need)"))+
+    sect("p2","Items / service requirements",
+      rowTable("line_rows",ROWDEFS.lines,"Add line")+
+      Lsel("p_cur","Currency",["JOD","USD","EUR"],1,false)+
+      L("p_total","Estimated total",`<input id="p_total" readonly>`)+
+      L("p_method","Procurement method (auto)",`<input id="p_method" readonly>`)+
+      `<div class="full mailnote" id="p_rules"></div>`)+
+    sect("p3","Justification",
+      Larea("p_purpose","Purpose / need",1)+
+      Larea("p_attach","Available documents (specifications, donor/client approval, quotes) — file locations / links"));
+  addRows("line_rows","lines",2);
+  $("custombody").addEventListener("input",procRecalc);
+  $("custombody").addEventListener("change",procRecalc);
+  procRecalc();
+}
+function procRecalc(){
+  if(currentForm!=="procurement"||!$("line_rows"))return;
+  const gw=$("w-p_goods");if(gw)gw.hidden=V("p_cat")!=="Goods";
+  const uw=$("w-p_urgent_reason");if(uw)uw.hidden=V("p_priority")!=="Urgent";
+  let total=0;
+  readRows("line_rows").forEach(r=>{const q=parseFloat(r.qty),u=parseFloat(r.unit_price);if(q>0&&u>=0)total+=q*u;});
+  const cur=V("p_cur")||"JOD";
+  $("p_total").value=total?total.toFixed(2)+" "+cur:"";
+  let method="",rules="";
+  if(total>0){
+    if(cur==="JOD"){
+      method=total<=350?"MICRO":(total<=50000?"COMPETITIVE":"TENDER");
+      rules=method==="MICRO"
+        ?("Micro purchase — no competing quotations required; reasonable market price. Payment: "+(total<100?"cash permitted (optional), ":"")+"cheque or bank transfer"+(total<100?"":" (cash not permitted at 100 JOD and above)")+". Recorded in the micro-purchase log.")
+        :method==="COMPETITIVE"
+        ?"Competitive — procurement obtains minimum 3 supplier offers; fewer offers or a non-lowest selection needs a signed waiver memo (2 signatories). Third-party due diligence required before award."
+        :"Tender — public announcement for at least 14 days, restricted bids until closing, Tender Committee award. Third-party due diligence required before award.";
+    }else{
+      method="Set after Finance records the approved exchange rate";
+      rules="Amounts in "+cur+" are classified (micro / competitive / tender) once Finance records the approved rate to JOD.";
+    }
+  }
+  $("p_method").value=method;$("p_rules").textContent=rules;
+}
+function collectProc(){
+  if(!V("p_project"))return{error:"Choose the project / cost centre."};
+  if(!V("p_required"))return{error:"Choose the required-by date."};
+  if(!V("p_priority"))return{error:"Choose the priority."};
+  if(V("p_priority")==="Urgent"&&!V("p_urgent_reason"))return{error:"Urgent requests need a justification."};
+  if(!V("p_cat"))return{error:"Choose Goods or Services."};
+  if(V("p_cat")==="Goods"&&!V("p_goods"))return{error:"Choose the goods type (Supplies or Assets)."};
+  const lines=readRows("line_rows");
+  if(!lines.length)return{error:"Add at least one item / service line."};
+  for(const l of lines){if(!l.description)return{error:"Each line needs a description."};if(!(parseFloat(l.qty)>0))return{error:"Each line needs a quantity greater than 0."};}
+  if(!V("p_purpose"))return{error:"Explain the purpose / need."};
+  const data={project:V("p_project"),required_by:V("p_required"),priority:V("p_priority"),
+    procurement_category:V("p_cat"),currency:V("p_cur"),purpose:V("p_purpose"),
+    estimated_total:$("p_total").value,method:$("p_method").value,lines};
+  if(V("p_priority")==="Urgent")data.urgent_reason=V("p_urgent_reason");
+  if(V("p_cat")==="Goods")data.goods_type=V("p_goods");
+  if(V("p_admin"))data.administrative="Yes";
+  if(V("p_attach"))data.attachments=V("p_attach");
+  if((V("p_cur")||"JOD")==="JOD"){
+    const tot=parseFloat($("p_total").value)||0;
+    if(tot>350)data.due_diligence_required="Yes — third party must be cleared before award";
+  }
+  return{data,items:[]};
+}
+
 /* ====== REQUEST LISTS ====== */
+const pretty=k=>k.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+function subTable(title,rows){
+  if(!rows||!rows.length)return "";
+  const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+  return `<div style="margin-top:8px"><b style="font-size:12px">${esc(title)}</b><div class="itemswrap"><table>
+    <thead><tr>${cols.map(c=>`<th>${esc(pretty(c))}</th>`).join("")}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(Array.isArray(r[c])?r[c].join(", "):(r[c]??""))}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+}
 function detailHtml(r){
   const f=FORMS[r.type]||{fields:[]};
+  if(f.custom){
+    const fd=r.fields||{};
+    let kv="",tables="";
+    for(const [k,v] of Object.entries(fd)){
+      if(Array.isArray(v))tables+=subTable(pretty(k),v);
+      else if(v&&typeof v==="object")kv+=`<dt>${esc(pretty(k))}</dt><dd>${esc(Object.entries(v).map(([a,b])=>pretty(a)+" × "+b).join(", "))}</dd>`;
+      else kv+=`<dt>${esc(pretty(k))}</dt><dd>${esc(v)}</dd>`;
+    }
+    const hist2=(events[r.id]||[]).map(h=>`<li>${esc(h.action)}, ${esc(fmtDate(h.at))}${h.note?` · “${esc(h.note)}”`:""}</li>`).join("");
+    return `<dl class="kv">${kv}</dl>${tables}<ul class="hist">${hist2}</ul>`;
+  }
   const kv=(f.fields||[]).filter(fl=>r.fields&&r.fields[fl.k]&&fl.t!=="register"||((fl.k==="consultant"||fl.k==="counterparty")&&r.fields[fl.k]))
     .map(fl=>`<dt>${esc(fl.l)}</dt><dd>${esc(r.fields[fl.k])}</dd>`).join("");
   let items="";
