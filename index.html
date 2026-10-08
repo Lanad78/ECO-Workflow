@@ -10,7 +10,7 @@
   --bg:#f4f7f8; --panel:#ffffff; --ink:#12303c; --muted:#5b7480;
   --navy:#0e2a38; --bright:#2e9ab8;
   --accent:#17607a; --accent-ink:#ffffff; --sand:#e2601f;
-  --line:#e2e9ec; --soft:#eaf1f4;
+  --line:#e2e9ec; --soft:#eaf1f4; --inborder:#aec2cc;
   --ok:#3c8c46; --warn:#b4561d; --bad:#b3362c; --info:#2e9ab8;
   --chip-ok:#e7f2e8; --chip-warn:#fbe9de; --chip-bad:#f8e4e1; --chip-info:#e3f2f7; --chip-neutral:#eceff1;
 }
@@ -19,7 +19,7 @@
     --bg:#0b1f2a; --panel:#122c3a; --ink:#e2e9ec; --muted:#8fa7b2;
     --navy:#e2e9ec; --bright:#86c7da;
     --accent:#2e9ab8; --accent-ink:#071923; --sand:#e8763c;
-    --line:#1f4152; --soft:#16384a;
+    --line:#1f4152; --soft:#16384a; --inborder:#44637a;
     --ok:#7fbf57; --warn:#e8884f; --bad:#e08a81; --info:#86c7da;
     --chip-ok:#173827; --chip-warn:#3d2817; --chip-bad:#3b2422; --chip-info:#15323f; --chip-neutral:#1d3642;
     color-scheme: dark;
@@ -54,17 +54,19 @@ nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(-
 .panel h2{margin:0 0 2px;font:700 19px "IBM Plex Serif",serif;}
 .panel h3{margin:0 0 6px;font:700 16px "IBM Plex Serif",serif;}
 .panel .meta{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
 .fields .full{grid-column:1/-1;}
 @media (max-width:560px){.fields{grid-template-columns:1fr;}.fields .full{grid-column:auto;}}
-label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted);min-width:0;}
-input,select,textarea{font:14px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--bg);
-  border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--ink);min-width:0;}
+input,select,textarea{font:14px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);
+  border:1.5px solid var(--inborder);border-radius:7px;padding:9px 11px;width:100%;}
 textarea{min-height:64px;resize:vertical;}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;}
 .items table{border-collapse:collapse;width:100%;min-width:460px;}
 .items th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:4px 6px;}
 .items td{padding:3px 4px;}
+#custombody .items{border-top:1px solid var(--line);padding-top:14px;}
+#custombody .items h3{color:var(--accent);}
 .itemswrap{overflow-x:auto;}
 .btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);
   font:600 13.5px "IBM Plex Sans",sans-serif;border-radius:7px;padding:8px 16px;cursor:pointer;width:auto;}
@@ -120,7 +122,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .org .node b{display:block;}
 .org .node span{font-size:12px;color:var(--muted);}
 .signin{max-width:420px;margin:60px auto;}
-footer.note{margin-top:34px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:12px;max-width:80ch;}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -245,7 +246,6 @@ footer.note{margin-top:34px;color:var(--muted);font-size:12px;border-top:1px sol
         <button class="btn" id="np-add">Add person</button></div></div>
   </section>
 
-  <footer class="note">ECO Workflow Portal · Procedures: ECO-PRC-001 (project opening/closure), Agreements Procedure, Invoicing Procedure, Third-Party Due Diligence Manual v1.1, QP10 work rules, ISO 9001:2015 context. All data is held in ECO's Supabase project; access requires an ECO staff sign-in. Every change is logged.</footer>
   </div>
 </div>
 
@@ -459,6 +459,23 @@ function openForm(key){
 }
 $("backbtn").addEventListener("click",()=>{$("formhost").hidden=true;$("chooser").hidden=false;});
 
+async function uploadEvtFiles(ref){
+  const defs=[["e_agenda_upload","Agenda"],["e_parts_upload","Attendees list"],["e_inv_upload","Invitation letter"]];
+  const files=[];
+  for(const [id,label] of defs){
+    const el=$(id);
+    if(!el||!el.files||!el.files[0])continue;
+    const w=$("w-"+id);if(w&&w.hidden)continue;
+    const f=el.files[0];
+    if(f.size>10*1024*1024)return{error:label+": the file is larger than 10 MB."};
+    const safe=f.name.replace(/[^A-Za-z0-9._-]/g,"_").slice(-80);
+    const path=ref.replace(/[^A-Za-z0-9_-]/g,"")+"/"+label.toLowerCase().replace(/[^a-z]+/g,"-")+"-"+safe;
+    const {error}=await supa.storage.from("attachments").upload(path,f,{upsert:true});
+    if(error)return{error:"Couldn't upload "+f.name+": "+error.message};
+    files.push({label,name:f.name,path});
+  }
+  return{files};
+}
 $("reqform").addEventListener("submit",async e=>{
   e.preventDefault();
   const f=FORMS[currentForm]; const errEl=$("formerr"); errEl.hidden=true;
@@ -501,6 +518,11 @@ $("reqform").addEventListener("submit",async e=>{
   try{
     const {data:ref,error:er}=await supa.rpc("next_ref",{p_prefix:f.prefix,p_form_type:currentForm});
     if(er)throw er;
+    if(f.custom==="evt"){
+      const up=await uploadEvtFiles(ref);
+      if(up.error){fail(up.error);btn.disabled=false;return;}
+      if(up.files.length)data.attachments=up.files;
+    }
     const mgr=(!f.direct&&me.manager_id)?me.manager_id:null;
     const status=mgr?"pending_manager":"submitted";
     const {data:ins,error}=await supa.from("requests").insert({ref,type:currentForm,status,person_id:me.id,
@@ -531,6 +553,7 @@ const Ldate=(id,label,req,t)=>L(id,label+(req?" *":""),`<input id="${id}" type="
 const Lsel=(id,label,opts,req,blank=true)=>L(id,label+(req?" *":""),`<select id="${id}">${blank?'<option value=""></option>':""}${opts.map(o=>`<option>${esc(o)}</option>`).join("")}</select>`);
 const Larea=(id,label,req)=>L(id,label+(req?" *":""),`<textarea id="${id}"></textarea>`,1);
 const Lchk=(id,label)=>`<label class="f" id="w-${id}" style="flex-direction:row;align-items:center;gap:8px"><input id="${id}" type="checkbox" style="width:auto">${label}</label>`;
+const Lfile=(id,label)=>`<label class="f full" id="w-${id}">${label}<input id="${id}" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg"></label>`;
 const sect=(id,title,inner)=>`<div id="sec-${id}" class="items" style="margin-top:18px"><h3>${title}</h3><div class="fields">${inner}</div></div>`;
 const V=id=>{const e=$(id);return e?(e.type==="checkbox"?e.checked:e.value.trim()):"";};
 const projOptions=()=>projects.filter(p=>p.status==="ongoing").map(p=>(p.code?p.code+" — ":"")+p.name);
@@ -581,7 +604,9 @@ function initEvt(){
     sect("loc","Location",
       Lsel("e_gov","Governorate",GOVS,1)+
       Ltxt("e_country","Country",1,0,"")+
-      Ltxt("e_city","Destination city / locality",1))+
+      Ltxt("e_city","Destination city / locality",1)+
+      Ltxt("e_location","Location (venue / area)",1,0,"e.g. Abdali Boulevard, Shmeisani")+
+      Ltxt("e_maplink","Google Maps link (optional)",0,1,"https://maps.app.goo.gl/..."))+
     sect("event","Event information",
       Ltxt("e_name","Event name",1)+
       Lsel("e_kind","Event type",["Meeting","Workshop","Training","Conference","Seminar","Forum","Field visit","Site inspection","Retreat","Other"],1)+
@@ -659,16 +684,19 @@ function initEvt(){
     sect("agenda","Agenda",
       Lsel("e_agenda","Agenda status",["Draft available","Final available","To be prepared"],1)+
       Ltxt("e_agenda_file","Agenda file location (server path / link)")+
+      Lfile("e_agenda_upload","Attach the agenda file")+
       Larea("e_agenda_notes","Agenda preparation instructions (topics, sessions, speakers, timings)"))+
     sect("parts","Participants",
       Lsel("e_plist","Participant list status",["Complete","Partial","To be confirmed"],1)+
-      rowTable("part_rows",ROWDEFS.parts,"Add participant"))+
+      rowTable("part_rows",ROWDEFS.parts,"Add participant")+
+      Lfile("e_parts_upload","Attach the attendees / participants list"))+
     sect("inv","Invitation letters",
       Lsel("e_invreq","Invitation letters required",["Yes","No"],1)+
       Ltxt("e_inv_recipients","Recipients (names from the participant list)")+
       Lsel("e_inv_lang","Letter language",["Arabic","English","Bilingual Arabic/English","Other"],0)+
       L("e_inv_format","Format",["Electronic PDF","Printed letter"].map(x=>`<label style="font-size:12px;margin-right:8px"><input type="checkbox" class="invf" value="${x}" style="width:auto"> ${x}</label>`).join(""),1)+
       Ldate("e_inv_due","Preparation deadline")+
+      Lfile("e_inv_upload","Attach invitation letter draft / template")+
       Larea("e_inv_details","Wording / signatory details"))+
     sect("cert","Certificates",
       Lsel("e_certreq","Completion certificates required",["Yes","No"],1)+
@@ -707,9 +735,14 @@ function evtRecalc(){
   show("trans",!!st.t&&!!st.s);show("pd",st.isEvent&&st.away);show("abroad",st.isEvent&&st.abroad);
   show("fees",st.t==="PARTICIPATION");show("budget",!!st.t);show("del",st.isDel);
   show("agenda",st.isArr);show("parts",st.isArr);show("inv",st.isArr);show("cert",st.isArr);show("sub",!!st.t&&!!st.s);
-  const wgov=$("w-e_gov");if(wgov)wgov.hidden=st.abroad;
+  const inCity=st.s==="CITY";
+  const wgov=$("w-e_gov");if(wgov)wgov.hidden=st.abroad||inCity;
+  const wctry=$("w-e_country");if(wctry)wctry.hidden=inCity;
   const ctry=$("e_country");if(ctry&&!st.abroad){ctry.value="Jordan";ctry.readOnly=true;}else if(ctry){if(ctry.value==="Jordan")ctry.value="";ctry.readOnly=false;}
-  const city=$("e_city");if(city&&st.s==="CITY"){city.value="Amman";city.readOnly=true;}else if(city){if(city.value==="Amman"&&st.s!=="CITY")city.value="";city.readOnly=false;}
+  const wcity=$("w-e_city");if(wcity)wcity.hidden=inCity;
+  const city=$("e_city");if(city&&inCity){city.value="Amman";}else if(city){if(city.value==="Amman"&&!inCity)city.value="";}
+  const wloc=$("w-e_location");if(wloc)wloc.hidden=!inCity;
+  const wmap=$("w-e_maplink");if(wmap)wmap.hidden=!inCity;
   const tot=(parseInt(V("e_att_eco"))||0)+(parseInt(V("e_att_cli"))||0)+(parseInt(V("e_att_inv"))||0);
   if($("e_att_total"))$("e_att_total").value=tot;
   const ko=$("w-e_kind_other");if(ko)ko.hidden=V("e_kind")!=="Other";
@@ -749,11 +782,12 @@ function evtRecalc(){
   ["e_reg_amount","e_reg_cur"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!regYes;});
   const agSt=V("e_agenda");
   const af=$("w-e_agenda_file");if(af)af.hidden=!(agSt==="Draft available"||agSt==="Final available");
+  const au=$("w-e_agenda_upload");if(au)au.hidden=!(agSt==="Draft available"||agSt==="Final available");
   const an=$("w-e_agenda_notes");if(an)an.hidden=agSt!=="To be prepared";
   const pl=V("e_plist");
   const pr=$("part_rows");if(pr)pr.closest("div.full").hidden=!(pl==="Complete"||pl==="Partial");
   const invYes=V("e_invreq")==="Yes";
-  ["e_inv_recipients","e_inv_lang","e_inv_format","e_inv_due","e_inv_details"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!invYes;});
+  ["e_inv_recipients","e_inv_lang","e_inv_format","e_inv_due","e_inv_details","e_inv_upload"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!invYes;});
   const certYes=V("e_certreq")==="Yes";
   ["e_cert_recipients","e_cert_type","e_cert_lang","e_cert_format","e_cert_due","e_cert_details"].forEach(id=>{const w=$("w-"+id);if(w)w.hidden=!certYes;});
   const dr=$("w-e_dreturn_details");if(dr)dr.hidden=V("e_dreturn")!=="Yes";
@@ -767,8 +801,10 @@ function collectEvt(){
   if(!st.t)return{error:"Choose the request type."};
   if(!st.s)return{error:"Choose the location category."};
   const req=(id,label)=>{const w=$("w-"+id);if(w&&w.hidden)return null;if(!V(id))return label;return null;};
-  const must=[["e_project","Project / cost centre"],["e_purpose","Purpose"],["e_city","Destination city"]];
-  if(!st.abroad)must.push(["e_gov","Governorate"]);else must.push(["e_country","Country"]);
+  const must=[["e_project","Project / cost centre"],["e_purpose","Purpose"]];
+  if(st.s==="CITY")must.push(["e_location","Location"]);else must.push(["e_city","Destination city"]);
+  if(st.s==="GOVERNORATE")must.push(["e_gov","Governorate"]);
+  if(st.abroad)must.push(["e_country","Country"]);
   if(st.isEvent)must.push(["e_name","Event name"],["e_kind","Event type"],["e_organizer","Organizer"],["e_start","Event start"],["e_end","Event end"]);
   if(st.isArr)must.push(["e_att_eco","Attendees — ECO"],["e_att_cli","Attendees — Clients"],["e_att_inv","Attendees — Invitees"],
     ["e_coffee","Coffee breaks"],["e_lunch","Lunch required"],["e_setup","Venue setup"],["e_interp","Interpretation required"],
@@ -804,9 +840,11 @@ function collectEvt(){
   if(V("e_invreq")==="Yes"&&![...document.querySelectorAll(".invf:checked")].length)return{error:"Choose the invitation format."};
   if(V("e_certreq")==="Yes"&&![...document.querySelectorAll(".certf:checked")].length)return{error:"Choose the certificate format."};
   if(V("e_reg")==="Yes"&&!(parseFloat(V("e_reg_amount"))>=0&&V("e_reg_cur")))return{error:"Enter the registration fee amount and currency."};
+  if(V("e_maplink")&&!/^https?:\/\//.test(V("e_maplink")))return{error:"The Google Maps link should start with https://."};
   if(!V("e_decl"))return{error:"Tick the declaration to confirm the request details."};
   const data={request_type:st.t,location_scope:st.s,project:V("e_project"),purpose:V("e_purpose"),
-    country:st.abroad?V("e_country"):"Jordan",governorate:st.abroad?"":V("e_gov"),city:V("e_city")};
+    country:st.abroad?V("e_country"):"Jordan",governorate:(st.abroad||st.s==="CITY")?"":V("e_gov"),city:st.s==="CITY"?"Amman":V("e_city")};
+  if(st.s==="CITY"){data.location=V("e_location");if(V("e_maplink"))data.map_link=V("e_maplink");}
   const put=(k,id)=>{const w=$("w-"+id);if(w&&w.hidden)return;const v=V(id);if(v!==""&&v!==false)data[k]=v===true?"Yes":v;};
   const sec=id=>!$("sec-"+id).hidden;
   if(sec("event")){put("event_name","e_name");put("event_kind","e_kind");put("event_kind_other","e_kind_other");put("organizer","e_organizer");
@@ -939,6 +977,11 @@ function detailHtml(r){
     const fd=r.fields||{};
     let kv="",tables="";
     for(const [k,v] of Object.entries(fd)){
+      if(k==="attachments"&&Array.isArray(v)){
+        tables+=`<div style="margin-top:8px"><b style="font-size:12px">Attachments</b><div>`+
+          v.map(a=>`<button type="button" class="btn small" data-file="${esc(a.path)}" style="margin:4px 6px 0 0">${esc(a.label)} — ${esc(a.name)}</button>`).join("")+`</div></div>`;
+        continue;
+      }
       if(Array.isArray(v))tables+=subTable(pretty(k),v);
       else if(v&&typeof v==="object")kv+=`<dt>${esc(pretty(k))}</dt><dd>${esc(Object.entries(v).map(([a,b])=>pretty(a)+" × "+b).join(", "))}</dd>`;
       else kv+=`<dt>${esc(pretty(k))}</dt><dd>${esc(v)}</dd>`;
@@ -1013,6 +1056,12 @@ function renderLists(){
   $("n-queue").textContent=pending;$("n-queue").hidden=!pending;
 }
 document.addEventListener("click",async e=>{
+  const fb=e.target.closest("[data-file]");
+  if(fb){
+    const {data:su}=await supa.storage.from("attachments").createSignedUrl(fb.dataset.file,3600);
+    if(su&&su.signedUrl)window.open(su.signedUrl,"_blank");
+    return;
+  }
   const head=e.target.closest("[data-toggle]");
   if(head&&!e.target.closest("button,input,select")){
     const id=head.dataset.toggle;
