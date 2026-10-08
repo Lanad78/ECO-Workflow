@@ -7,19 +7,21 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 :root{
-  --bg:#f6f5f1; --panel:#ffffff; --ink:#22303a; --muted:#64727e;
-  --accent:#0e5f6e; --accent-ink:#ffffff; --sand:#c9a227;
-  --line:#dfe0d9; --soft:#eef0ea;
-  --ok:#2e7d4f; --warn:#a66a00; --bad:#b3362c; --info:#39618f;
-  --chip-ok:#e3f1e8; --chip-warn:#f7ecd8; --chip-bad:#f8e4e1; --chip-info:#e4ecf5; --chip-neutral:#ececec;
+  --bg:#f4f7f8; --panel:#ffffff; --ink:#12303c; --muted:#5b7480;
+  --navy:#0e2a38; --bright:#2e9ab8;
+  --accent:#17607a; --accent-ink:#ffffff; --sand:#e2601f;
+  --line:#e2e9ec; --soft:#eaf1f4;
+  --ok:#3c8c46; --warn:#b4561d; --bad:#b3362c; --info:#2e9ab8;
+  --chip-ok:#e7f2e8; --chip-warn:#fbe9de; --chip-bad:#f8e4e1; --chip-info:#e3f2f7; --chip-neutral:#eceff1;
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --bg:#15191d; --panel:#1d2329; --ink:#e4e7e9; --muted:#9aa6af;
-    --accent:#4db3c4; --accent-ink:#0d2328; --sand:#d4b14a;
-    --line:#333b42; --soft:#232a31;
-    --ok:#6fc492; --warn:#dca94f; --bad:#e08a81; --info:#86aed6;
-    --chip-ok:#1e3328; --chip-warn:#39301b; --chip-bad:#3b2422; --chip-info:#21303f; --chip-neutral:#2b3238;
+    --bg:#0b1f2a; --panel:#122c3a; --ink:#e2e9ec; --muted:#8fa7b2;
+    --navy:#e2e9ec; --bright:#86c7da;
+    --accent:#2e9ab8; --accent-ink:#071923; --sand:#e8763c;
+    --line:#1f4152; --soft:#16384a;
+    --ok:#7fbf57; --warn:#e8884f; --bad:#e08a81; --info:#86c7da;
+    --chip-ok:#173827; --chip-warn:#3d2817; --chip-bad:#3b2422; --chip-info:#15323f; --chip-neutral:#1d3642;
     color-scheme: dark;
   }
 }
@@ -27,8 +29,8 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding:0 16px 48px;}
 .wrap{max-width:1040px;margin:0 auto;}
 header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;padding:26px 0 6px;}
-h1{font:700 26px/1.2 "IBM Plex Serif",Georgia,serif;margin:0;}
-h1 .eco{color:var(--accent);}
+h1{font:700 26px/1.2 "IBM Plex Serif",Georgia,serif;margin:0;color:var(--navy);}
+h1 .eco{color:var(--bright);}
 .whoami{margin-left:auto;color:var(--muted);font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .rolebadge{background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:600;}
 .sub{color:var(--muted);margin:0 0 18px;font-size:13.5px;max-width:70ch;}
